@@ -3,6 +3,13 @@ package Utils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Yannick Vaske
+ * @version 15.09.2017
+ * @see Observer
+ *
+ * Eine eigene kleine Implementation der Observable Klasse, damit nicht ständig setChanged extra aufgerufen wird.
+ */
 public class Observable {
 
     private List<Observer> _listObservables;

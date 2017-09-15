@@ -1,14 +1,19 @@
-package Model;
+package View;
 
 import Controller.LandschaftsMouseController;
+import Model.Kachel;
+import Model.KachelTyp;
+import Model.Landschaft;
+import Model.PlacingItems;
 import Utils.Observer;
 import javafx.animation.RotateTransition;
+import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -18,38 +23,59 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 
-
+/**
+ * @author Yannick Vaske
+ * @version 15.09.2017
+ *
+ * Diese Klasse erbt von einere Region und wird im Content-Panel auf angezeigt. Sie gibt das Model visuell wieder.
+ *
+ */
 public class LandschaftPanel extends Region implements Observer {
     private Landschaft _landschaft;
     private PlacingItems _placingItems;
     private LandschaftsMouseController _mouseController;
     private ScrollPane _parent;
+    private Canvas _canvas;
 
     public static final int BILDGROESSE_PIXEL = 32;
     public static final int ANZAHL_MUNITION_X_OFFSET = -8;
     public static final int ANZAHL_MUNITION_Y_OFFSET = 12;
 
-    public LandschaftPanel(Landschaft Landschaft, PlacingItems placingItems, ScrollPane parent) {
-        this._landschaft = Landschaft;
+
+    /**
+     * Konstruktur der LandschaftsPanel Klasse. Es wird das Model, das übergeordnete Pane, in welchem diese Region angezeigt werden soll und die Placing Items benötigt.
+     * @param landschaft Das Model
+     * @param placingItems Der aktuelle Zustand der ausgewählten Buttons
+     * @param parent Das übergeordnete Pane.
+     */
+    public LandschaftPanel(Landschaft landschaft, PlacingItems placingItems, ScrollPane parent) {
+        this._landschaft = landschaft;
         this._placingItems = placingItems;
         this._parent = parent;
         this._mouseController = new LandschaftsMouseController(_landschaft, _placingItems);
 
-        this.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> _mouseController.ClickedOnLandschaft(event.getX(), event.getY()));
-        this.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> _mouseController.ClickReleasedLandschaft(event.getX(), event.getY()));
-        this.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> _mouseController.MouseMoveLandschaft(event.getX(),event.getY()));
+
         this._landschaft.addObserver(this);
     }
 
-
+    /**
+     * Diese Methode zeichnet das Model auf eine Canvas und fügt das Canvas als Node der aktuellen Instanz dieser Klasse zu.
+     */
     public void zeichneSpielfeld() {
-        Canvas canvas = new Canvas();
-        canvas.setWidth(_landschaft.get_spielfeldGroesseRows() * BILDGROESSE_PIXEL);
-        canvas.setHeight(_landschaft.get_spielfeldGroesseCols() * BILDGROESSE_PIXEL);
+        _canvas = new Canvas();
+
+        _canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> _mouseController.ClickedOnLandschaft(event.getX(), event.getY()));
+        _canvas.setOnDragDetected(event -> _mouseController.DragDetectedLandschaft(event, _canvas));
+        _canvas.setOnDragOver(event -> _mouseController.OnDragOver(event));
+        _canvas.setOnDragDropped(event -> _mouseController.OnDragDropped(event));
+
+
+        _canvas.setWidth(_landschaft.get_spielfeldGroesseRows() * BILDGROESSE_PIXEL);
+        _canvas.setHeight(_landschaft.get_spielfeldGroesseCols() * BILDGROESSE_PIXEL);
         _parent.setPrefSize(this.getWidth() + 64, this.getHeight() + 64);
 
 
-        GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+        GraphicsContext graphicsContext = _canvas.getGraphicsContext2D();
 
         Image image = null;
         Image imageWall = new Image(getClass().getResource("/resources/Wall32.png").toString());
@@ -119,7 +145,7 @@ public class LandschaftPanel extends Region implements Observer {
 
         //Das Canvas in die Region zeichnen
         getChildren().clear();
-        getChildren().add(canvas);
+        getChildren().add(_canvas);
     }
 
 

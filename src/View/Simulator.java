@@ -16,7 +16,6 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 /**
@@ -24,8 +23,8 @@ import java.util.Optional;
  *
  * @author Yannick Vaske
  * @version 17.08.2017
- * @see Model.Landschaft
- * @see Model.Panzer
+ * @see Landschaft
+ * @see Panzer
  */
 public class Simulator extends Application {
 
