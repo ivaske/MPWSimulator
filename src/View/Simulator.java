@@ -13,7 +13,10 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -29,12 +32,13 @@ import java.util.Optional;
  * @see Landschaft
  * @see Panzer
  */
-public class Simulator extends Application {
+public class Simulator {
 
     //Konstanten
     private static final int PADDING_TILES = 50;
 
-
+    private Stage _primaryStage;
+    private Programm _programm;
     private BorderPane _root;
     private BorderPane _contentPane;
     private SplitPane _splitPane;
@@ -116,17 +120,12 @@ public class Simulator extends Application {
     private MenuItem _pauseMenuItem;
     private MenuItem _stopMenuItem;
 
-
-    // public static void main(String[] args) throws Exception {
-    //     launch(args);
-    // }
-
-    @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage, Programm programm) {
         _root = new BorderPane();
         _landschaft = new Landschaft();
         _aktionenController = new AktionenButtonController(_landschaft, this);
         _placingItems = new PlacingItems();
+        _programm = programm;
 
 
         createMenu();
@@ -136,11 +135,12 @@ public class Simulator extends Application {
 
         Scene scene = new Scene(_root);
 
-        primaryStage.setTitle("The Tank Game");
-        primaryStage.getIcons().add(new Image(getClass().getResource("/resources/Panzer24.png").toString()));
-        primaryStage.setScene(scene);
-        primaryStage.setMaximized(true);
-        primaryStage.show();
+        _primaryStage = primaryStage;
+        _primaryStage.setTitle("The Tank Game: " + programm.get_name());
+        _primaryStage.getIcons().add(new Image(getClass().getResource("/resources/Panzer24.png").toString()));
+        _primaryStage.setScene(scene);
+        _primaryStage.setMaximized(true);
+        _primaryStage.show();
     }
 
     /**
@@ -156,9 +156,12 @@ public class Simulator extends Application {
         _neuMenuItem.setOnAction(event -> ProgrammController.neuesProgramm());
         _neuMenuItem.setGraphic(new ImageView(new Image(getClass().getResource("/resources/New16.gif").toString())));
         _neuMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+N"));
+
         _oeffnenMenuItem = new MenuItem("Öffnen");
+        _oeffnenMenuItem.setOnAction(event -> ProgrammController.oeffneProgramm(_primaryStage));
         _oeffnenMenuItem.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Open16.gif").toString())));
         _oeffnenMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+O"));
+
         _kompilierenMenuItem = new MenuItem("Kompilieren");
         _kompilierenMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+K"));
         _druckenMenuItem = new MenuItem("Drucken");
@@ -340,9 +343,9 @@ public class Simulator extends Application {
         _scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         _scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         _textarea = new TextArea();
-        _textarea.setText("public static void main(String[] args) {\n" +
-                "\n" +
-                "}");
+        _textarea.setText(_programm.get_textFieldContent());
+        _textarea.addEventHandler(KeyEvent.KEY_RELEASED, event -> _programm.set_textFieldContent(_textarea.getText()));
+
         _splitPane.getItems().addAll(_textarea, _scrollPane);
 
         _contentPane.setCenter(_splitPane);
