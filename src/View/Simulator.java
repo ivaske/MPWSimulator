@@ -1,6 +1,7 @@
 package View;
 
 import Controller.AktionenButtonController;
+import Controller.ProgrammController;
 import Model.*;
 import javafx.application.*;
 import javafx.geometry.Orientation;
@@ -16,6 +17,8 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 import java.util.Optional;
 
 /**
@@ -114,9 +117,9 @@ public class Simulator extends Application {
     private MenuItem _stopMenuItem;
 
 
-    public static void main(String[] args) throws Exception {
-        launch(args);
-    }
+    // public static void main(String[] args) throws Exception {
+    //     launch(args);
+    // }
 
     @Override
     public void start(Stage primaryStage) {
@@ -124,6 +127,7 @@ public class Simulator extends Application {
         _landschaft = new Landschaft();
         _aktionenController = new AktionenButtonController(_landschaft, this);
         _placingItems = new PlacingItems();
+
 
         createMenu();
         createToolbar();
@@ -149,6 +153,7 @@ public class Simulator extends Application {
 
         _editorMenu = new Menu("_Editor");
         _neuMenuItem = new MenuItem("Neu");
+        _neuMenuItem.setOnAction(event -> ProgrammController.neuesProgramm());
         _neuMenuItem.setGraphic(new ImageView(new Image(getClass().getResource("/resources/New16.gif").toString())));
         _neuMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+N"));
         _oeffnenMenuItem = new MenuItem("Öffnen");
@@ -393,8 +398,7 @@ public class Simulator extends Application {
         }
     }
 
-    public static boolean isNumeric(String str)
-    {
+    public static boolean isNumeric(String str) {
         return str.matches("[+-]?\\d*(\\.\\d+)?");
     }
 

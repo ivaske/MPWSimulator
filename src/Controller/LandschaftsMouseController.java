@@ -37,14 +37,13 @@ public class LandschaftsMouseController {
     /**
      * Diese Methode behandel Click-Events auf das Canvas.
      *
-     * @param x relative X-Koordinate des Canvas.
-     * @param y relative Y-Koordinate des Canvas.
+     * @param event Event das durch den MouseClick ausgelöst wird.
      */
-    public void ClickedOnLandschaft(double x, double y) {
-        System.out.println("Clicked On Landschaftspanel x:" + x + " y:" + y);
+    public void ClickedOnLandschaft(MouseEvent event) {
+        System.out.println("Clicked On Landschaftspanel x:" + event.getX() + " y:" + event.getY());
 
-        int col = (int) y / LandschaftPanel.BILDGROESSE_PIXEL;
-        int row = (int) x / LandschaftPanel.BILDGROESSE_PIXEL;
+        int col = (int) event.getY() / LandschaftPanel.BILDGROESSE_PIXEL;
+        int row = (int) event.getX() / LandschaftPanel.BILDGROESSE_PIXEL;
         System.out.println("Clicked On Landschaftspanel row:" + row + " col:" + col);
 
         if (_landschaft.get_spielFeld()[row][col] == _landschaft.get_positionPanzer()) {
@@ -68,7 +67,7 @@ public class LandschaftsMouseController {
                 _landschaft.deleteTile(row, col);
                 break;
         }
-
+        event.consume();
     }
 
     /**
@@ -81,6 +80,8 @@ public class LandschaftsMouseController {
 
         int col = (int) event.getY() / LandschaftPanel.BILDGROESSE_PIXEL;
         int row = (int) event.getX() / LandschaftPanel.BILDGROESSE_PIXEL;
+
+        System.out.println("Clicked On Landschaftspanel row:" + row + " col:" + col);
 
         if (_landschaft.get_spielFeld()[row][col] == _landschaft.get_positionPanzer()) {
             //Wenn beim Dragstart der Panzer ist, darf gedraged werden:
@@ -98,6 +99,7 @@ public class LandschaftsMouseController {
 
     /**
      * Diese Methode wird beim draggen über das Canvas aufgerufen, um zum prüfen, ob der Dragvorgang an der aktuellen Position erfolgreich beendet werden kann.
+     *
      * @param event Das Drag-Event, welches diesen Aufruf auslöst.
      */
     public void OnDragOver(DragEvent event) {
@@ -110,7 +112,6 @@ public class LandschaftsMouseController {
         } else {
 
             event.acceptTransferModes(TransferMode.MOVE);
-            System.out.println("OnDragOver");
         }
         event.consume();
     }
@@ -118,6 +119,7 @@ public class LandschaftsMouseController {
 
     /**
      * Wenn der Drag beendet wird, wird diese Funktion aufgerufen, um zu überprüfen, ob der Panzer an dieser Stelle abgesetzt werden darf.
+     *
      * @param event Das Drag-Event, welches diesen Aufruf auslöst.
      */
     public void OnDragDropped(DragEvent event) {

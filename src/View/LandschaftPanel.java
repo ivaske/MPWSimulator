@@ -64,7 +64,8 @@ public class LandschaftPanel extends Region implements Observer {
     public void zeichneSpielfeld() {
         _canvas = new Canvas();
 
-        _canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> _mouseController.ClickedOnLandschaft(event.getX(), event.getY()));
+        //_canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> _mouseController.ClickedOnLandschaft(event));
+        _canvas.setOnMouseClicked(event -> _mouseController.ClickedOnLandschaft(event));
         _canvas.setOnDragDetected(event -> _mouseController.DragDetectedLandschaft(event, _canvas));
         _canvas.setOnDragOver(event -> _mouseController.OnDragOver(event));
         _canvas.setOnDragDropped(event -> _mouseController.OnDragDropped(event));
