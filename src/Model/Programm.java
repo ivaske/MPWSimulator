@@ -15,10 +15,12 @@ import javafx.stage.Stage;
 public class Programm {
 
     private String _name;
-    private static final String DEFAULT_PANZER = "defaultPanzer";
+    public static final String DEFAULT_PANZER = "defaultPanzer";
     private final String FILE_PREFIX;
     private final String FILE_POSTFIX;
+    private final String PRE_DATA = "void main() {\n" + "    }";
     private SimpleStringProperty _textFieldContent;
+    private Stage _stage;
 
     /**
      * Der default Konstruktor startet den defaultPanzer
@@ -33,14 +35,13 @@ public class Programm {
      * @param name Der Name des neu erstellten Programms.
      */
     public Programm(String name) {
-        this(name, "void main() {\n" +
-                "\n" +
-                "    }");
+        this(name, "");
     }
 
     public Programm(String name, String savedData) {
         _name = name;
 
+        //Initialisieren von PRE und POST Fix Werten
         FILE_PREFIX = "package Model;\n" +
                 "\n" +
                 "public class " + _name + " extends Model.Panzer {\n" +
@@ -50,15 +51,26 @@ public class Programm {
                 "    public ";
 
         FILE_POSTFIX = "}";
-        _textFieldContent = new SimpleStringProperty(savedData);
 
+        //parse savedData: Wenn keine savedData vorhanden, dann wird ein Standardwert geschrieben.
+        if (savedData != "") {
+            savedData = savedData.substring(FILE_PREFIX.length(), savedData.length() - FILE_POSTFIX.length());
+        } else {
+            savedData = PRE_DATA;
+        }
+
+        _textFieldContent = new SimpleStringProperty(savedData);
+    }
+
+    public String generiereZuSpeicherneDatei() {
+        return FILE_PREFIX + _textFieldContent.getValue() + FILE_POSTFIX;
     }
 
     public void buildScene() {
-        Stage programmStage = new Stage();
+        _stage = new Stage();
 
         Simulator simulator = new Simulator();
-        simulator.start(programmStage, this);
+        simulator.start(_stage, this);
 
     }
 
@@ -73,5 +85,24 @@ public class Programm {
     public void set_textFieldContent(String _textFieldContent) {
         this._textFieldContent.set(_textFieldContent);
         IO.println(_textFieldContent);
+    }
+
+    public Stage get_stage() {
+        return _stage;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        Programm that = (Programm) obj;
+
+        if (this.get_name().equals( that.get_name())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

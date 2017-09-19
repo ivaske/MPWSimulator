@@ -136,6 +136,7 @@ public class Simulator {
         Scene scene = new Scene(_root);
 
         _primaryStage = primaryStage;
+        _primaryStage.setOnCloseRequest(event -> ProgrammController.schliesseProgramm(_programm));
         _primaryStage.setTitle("The Tank Game: " + programm.get_name());
         _primaryStage.getIcons().add(new Image(getClass().getResource("/resources/Panzer24.png").toString()));
         _primaryStage.setScene(scene);
@@ -164,12 +165,15 @@ public class Simulator {
 
         _kompilierenMenuItem = new MenuItem("Kompilieren");
         _kompilierenMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+K"));
+
+
         _druckenMenuItem = new MenuItem("Drucken");
         _druckenMenuItem.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Print16.gif").toString())));
         _druckenMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+P"));
+
         _beendenMenuItem = new MenuItem("Beenden");
         _beendenMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+Q"));
-        _beendenMenuItem.setOnAction(e -> Platform.exit());
+        _beendenMenuItem.setOnAction(e -> ProgrammController.schliesseProgramm(_programm));
 
         _editorMenu.getItems().addAll(_neuMenuItem, _oeffnenMenuItem, new SeparatorMenuItem(), _kompilierenMenuItem,
                 _druckenMenuItem, new SeparatorMenuItem(), _beendenMenuItem);
@@ -255,12 +259,15 @@ public class Simulator {
         _root.setCenter(_contentPane);
 
         _buttonNew = new Button();
+        _buttonNew.setOnAction(event -> ProgrammController.neuesProgramm());
         _buttonNew.setGraphic(new ImageView(new Image(getClass().getResource("/resources/New24.gif").toString())));
 
         _buttonOpen = new Button();
+        _buttonOpen.setOnAction(event -> ProgrammController.oeffneProgramm(_primaryStage));
         _buttonOpen.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Open24.gif").toString())));
 
         _buttonSave = new Button();
+        _buttonSave.setOnAction(event -> ProgrammController.speichereProgramm(_programm));
         _buttonSave.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Save24.gif").toString())));
 
         _buttonCompile = new Button();

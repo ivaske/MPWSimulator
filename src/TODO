@@ -1,0 +1,8 @@
+TODO:
+    1.      Überprüfen des Bezeichners beim Erstellen eines neuen Programms
+    1.1     Überprüfen, ob es ein Programm mit dem Namen gibt
+    2.      Möglichkeit des Compilierens implementieren
+    2.1     Vor Compilation automatisch speichern
+    2.2     Beim Öffnen eines Programms ohne Meldung compilieren, falls Fehler den default verwenden.
+    3.      Dialoge verbessern:
+    3.1     Implementieren von Enter-Event

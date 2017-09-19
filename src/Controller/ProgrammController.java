@@ -4,6 +4,7 @@ import Model.IO;
 import Model.Programm;
 import com.sun.org.apache.xml.internal.serialize.LineSeparator;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
@@ -25,7 +26,9 @@ import java.util.Optional;
  */
 public class ProgrammController extends Application {
 
-    private final static String PFAD_DATEIEN = System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() + "saves" + FileSystems.getDefault().getSeparator();
+    public final static String PFAD_DATEIEN = System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() + "saves" + FileSystems.getDefault().getSeparator();
+    private final static String DATEIENDUNG = ".java";
+
 
     private static ArrayList<Programm> _listProgramme;
 
@@ -53,13 +56,18 @@ public class ProgrammController extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        Path path = Paths.get(PFAD_DATEIEN + Programm.DEFAULT_PANZER + DATEIENDUNG);
+        File file = new File(path.toString());
 
-        //Initialisiere DefaultHamster
-        Programm defaultProgramm = new Programm();
-        defaultProgramm.buildScene();
+        if (file.exists()) {
+            openFile(file);
+        } else {
+            //Initialisiere DefaultHamster
+            Programm defaultProgramm = new Programm();
+            defaultProgramm.buildScene();
 
-        _listProgramme.add(defaultProgramm);
-
+            _listProgramme.add(defaultProgramm);
+        }
     }
 
     /**
@@ -89,56 +97,85 @@ public class ProgrammController extends Application {
             Programm programm = new Programm(textField.getText());
             programm.buildScene();
         }
-
     }
 
     /**
      * Öffnet einen Filebrowser um ein vorhandenes Programm zu laden.
      */
     public static void oeffneProgramm(Stage callingStage) {
-        try {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Eine Datei öffnen");
+        chooser.setInitialDirectory(new File(PFAD_DATEIEN));
+        File file = chooser.showOpenDialog(callingStage);
 
+        openFile(file);
 
-            FileChooser chooser = new FileChooser();
-            chooser.setTitle("Eine Datei öffnen");
-            chooser.setInitialDirectory(new File(PFAD_DATEIEN));
-            File file = chooser.showOpenDialog(callingStage);
+    }
 
-            if (file == null || !file.exists()) {
-                return;
-            }
+    public static void openFile(File file) {
 
-            FileInputStream stream = new FileInputStream(file);
+        if (file == null || !file.exists()) {
+            return;
+        }
+
+        String programmName = file.getName().substring(0, file.getName().length() - DATEIENDUNG.length());
+        if (checkProgrammOpen(programmName)) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Dieses Programm ist bereits geöffnet.");
+            alert.showAndWait();
+            return;
+        }
+
+        //try-closeable
+        try (FileInputStream stream = new FileInputStream(file)) {
+
             byte[] buffer = new byte[(int) file.length()];
-
             stream.read(buffer);
 
-            String name = file.getName().substring(0,file.getName().lastIndexOf("."));
+            Programm programm = new Programm(programmName, new String(buffer));
 
-            Programm programm = new Programm(name, new String(buffer));
             _listProgramme.add(programm);
             programm.buildScene();
 
         } catch (FileNotFoundException ex) {
             IO.println(ex.getMessage());
-
         } catch (IOException ex) {
             IO.println(ex.getMessage());
-
         }
+    }
+
+    private static boolean checkProgrammOpen(String programmName) {
+        Programm programm = new Programm(programmName);
+        return _listProgramme.contains(programm); //Funktioniert, da die equals-Methode entprechend überschrieben wurde.
     }
 
     /**
      * Schließt die Instanz eines Programmes.
      */
-    public void schliesseProgramm() {
 
+    public static void schliesseProgramm(Programm programm) {
+
+        programm.get_stage().close();
+        _listProgramme.remove(programm);
+
+        if (_listProgramme.size() == 0) {
+            Platform.exit();
+        }
     }
 
     /**
      * Speichert das aktuelle Programm.
      */
     public static void speichereProgramm(Programm programm) {
+        //try closeable
+        try (FileOutputStream stream = new FileOutputStream(new File(PFAD_DATEIEN + programm.get_name() + DATEIENDUNG))) {
+            String inhalt = programm.generiereZuSpeicherneDatei();
 
+            stream.write(inhalt.getBytes());
+
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }
