@@ -18,7 +18,7 @@ import java.util.Random;
 public class Landschaft extends Observable {
     private static final int STANDARD_ROWS = 10;
     private static final int STANDARD_COLS = 10;
-    private static final int STANDARD_SEED = 566781587;
+    private static final int STANDARD_SEED = 1540434588;
 
     private int _spielfeldGroesseRows;
     private int _spielfeldGroesseCols;
@@ -107,11 +107,12 @@ public class Landschaft extends Observable {
      */
     private void setzteVorgegebenesSpielfeld() {
 
-        Random random = new Random(_seed);
         int minimum = 0;
         int maximum = 6;
 
         for (int row = 0; row < _spielfeldGroesseRows; row++) {
+            Random random = new Random(_seed + row);
+
             for (int col = 0; col < _spielfeldGroesseCols; col++) {
 
                 int n = maximum - minimum + 1;

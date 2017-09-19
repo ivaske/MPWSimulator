@@ -2,6 +2,7 @@ package Controller;
 
 import Model.IO;
 import Model.Programm;
+import com.sun.org.apache.xml.internal.serialize.LineSeparator;
 import javafx.application.Application;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -11,10 +12,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.io.*;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -27,7 +25,7 @@ import java.util.Optional;
  */
 public class ProgrammController extends Application {
 
-    private final static String PFAD_DATEIEN = System.getProperty("user.dir") + "\\saves\\";
+    private final static String PFAD_DATEIEN = System.getProperty("user.dir") + FileSystems.getDefault().getSeparator() + "saves" + FileSystems.getDefault().getSeparator();
 
     private static ArrayList<Programm> _listProgramme;
 
@@ -77,11 +75,8 @@ public class ProgrammController extends Application {
         pane.add(label, 0, 0);
         pane.add(textField, 0, 1);
 
-        ButtonType buttonTypeOK = ButtonType.OK;
-        ButtonType buttonTypeAbbort = ButtonType.CANCEL;
-
-        dialog.getDialogPane().getButtonTypes().add(buttonTypeOK);
-        dialog.getDialogPane().getButtonTypes().add(buttonTypeAbbort);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
 
         dialog.getDialogPane().setContent(pane);
 

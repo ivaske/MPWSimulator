@@ -371,11 +371,11 @@ public class Simulator {
         TextField textField_Rows = new TextField(Integer.toString(_landschaft.get_spielfeldGroesseRows()));
         TextField textField_Cols = new TextField(Integer.toString(_landschaft.get_spielfeldGroesseCols()));
 
-        ButtonType buttonTypeExit = new ButtonType("Setzte Spielfeldgröße", ButtonBar.ButtonData.APPLY);
 
         Label labelRows = new Label("Anzahl Rows:");
         Label labelCols = new Label("Anzahl Cols:");
-        dialog.getDialogPane().getButtonTypes().add(buttonTypeExit);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
 
         gridPane.add(labelRows, 0, 0);
         gridPane.add(textField_Rows, 0, 1);
@@ -386,9 +386,9 @@ public class Simulator {
         Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
         stage.getIcons().add(new Image("/resources/Panzer24.png"));
 
-        Optional<ButtonBar.ButtonData> result = dialog.showAndWait();
+        Optional<ButtonType> result = dialog.showAndWait();
         //Herausfinden, ob APPLY-Button gedrückt wurde
-        if (result != null && result.toString().substring(result.toString().indexOf("buttonData")).contains("APPLY")) {
+        if (result.isPresent() && result.get() == ButtonType.OK) {
             if (isNumeric(textField_Rows.getText()) && isNumeric(textField_Cols.getText())) {
                 int rows = Integer.parseInt(textField_Rows.getText());
                 int cols = Integer.parseInt(textField_Cols.getText());
