@@ -1,6 +1,7 @@
 package View;
 
 import Controller.AktionenButtonController;
+import Controller.CompileController;
 import Controller.ProgrammController;
 import Model.*;
 import javafx.application.*;
@@ -122,7 +123,7 @@ public class Simulator {
 
     public void start(Stage primaryStage, Programm programm) {
         _root = new BorderPane();
-        _landschaft = new Landschaft();
+        _landschaft = programm.get_landschaft();
         _aktionenController = new AktionenButtonController(_landschaft, this);
         _placingItems = new PlacingItems();
         _programm = programm;
@@ -271,6 +272,7 @@ public class Simulator {
         _buttonSave.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Save24.gif").toString())));
 
         _buttonCompile = new Button();
+        _buttonCompile.setOnAction(event -> CompileController.compile(_programm));
         _buttonCompile.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Compile24.gif").toString())));
 
         _buttonSpielfeld = new Button();

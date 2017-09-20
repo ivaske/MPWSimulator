@@ -7,11 +7,13 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
+import javax.tools.DiagnosticCollector;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.FileAttribute;
@@ -61,6 +63,7 @@ public class ProgrammController extends Application {
 
         if (file.exists()) {
             openFile(file);
+            CompileController.compileSilent(file, new DiagnosticCollector<>());
         } else {
             //Initialisiere DefaultHamster
             Programm defaultProgramm = new Programm();
@@ -77,14 +80,18 @@ public class ProgrammController extends Application {
         Dialog dialog = new Dialog();
         GridPane pane = new GridPane();
 
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
+        Button okButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setDisable(true);
+
         Label label = new Label("Bitte geben Sie einen Namen für das Programm ein.");
         TextField textField = new TextField();
+        textField.addEventHandler(KeyEvent.KEY_RELEASED, event -> checkSyntax(event, okButton));
 
         pane.add(label, 0, 0);
         pane.add(textField, 0, 1);
-
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
 
         dialog.getDialogPane().setContent(pane);
 
@@ -98,6 +105,39 @@ public class ProgrammController extends Application {
             programm.buildScene();
         }
     }
+
+    private static void checkSyntax(KeyEvent event, Button buttonToDisable) {
+
+        TextField textField = (TextField) event.getSource();
+        String input = textField.getText();
+
+        boolean disable = false;
+        if (input.length() > 0) {
+            for (int i = 0; i < input.toCharArray().length; i++) {
+                if (i == 0) {
+                    if (!Character.isJavaIdentifierStart(input.toCharArray()[i])) {
+                        disable = true;
+                        break;
+                    }
+                } else {
+                    if (!Character.isJavaIdentifierPart(input.toCharArray()[i])) {
+                        disable = true;
+                        break;
+                    }
+                }
+            }
+        } else {
+            disable = true;
+        }
+
+        //Überprüfen, ob ein Programm mit dem namen bereits geöffnet ist
+        if (!disable) {
+            disable = checkProgrammOpen(input);
+        }
+
+        buttonToDisable.setDisable(disable);
+    }
+
 
     /**
      * Öffnet einen Filebrowser um ein vorhandenes Programm zu laden.
@@ -165,9 +205,10 @@ public class ProgrammController extends Application {
     /**
      * Speichert das aktuelle Programm.
      */
-    public static void speichereProgramm(Programm programm) {
+    public static File speichereProgramm(Programm programm) {
+        File programmFile = new File(PFAD_DATEIEN + programm.get_name() + DATEIENDUNG);
         //try closeable
-        try (FileOutputStream stream = new FileOutputStream(new File(PFAD_DATEIEN + programm.get_name() + DATEIENDUNG))) {
+        try (FileOutputStream stream = new FileOutputStream(programmFile)) {
             String inhalt = programm.generiereZuSpeicherneDatei();
 
             stream.write(inhalt.getBytes());
@@ -177,5 +218,6 @@ public class ProgrammController extends Application {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        return programmFile;
     }
 }

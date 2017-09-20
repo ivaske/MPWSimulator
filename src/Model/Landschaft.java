@@ -5,6 +5,7 @@ import Exceptions.KeineMunitionInPanzerException;
 import Exceptions.VorneNichtFreiException;
 import Utils.Observable;
 
+import java.lang.reflect.Method;
 import java.util.Random;
 
 /**
@@ -98,8 +99,22 @@ public class Landschaft extends Observable {
         _positionPanzer = _spielFeld[0][0];
         aktualisiereKachelTyp(0, 0, KachelTyp.leer);
 
-        aktualisiereKachelTyp(_spielfeldGroesseRows -2, _spielfeldGroesseCols -2, KachelTyp.Hamster);
+        aktualisiereKachelTyp(_spielfeldGroesseRows - 2, _spielfeldGroesseCols - 2, KachelTyp.Hamster);
         _ausrichtung = Ausrichtung.Ost;
+    }
+
+    /**
+     * Methode um einen Panzer zu setzen. Wird benötigt, um einen neu kompilierten Panzer der landschaft zuzufügen.
+     *
+     * @param panzer Neuer Panzer der gesetzt werden soll.
+     */
+    public void setzePanzer(Panzer panzer) {
+        _panzer = panzer;
+
+        for (Method method : panzer.getClass().getDeclaredMethods()) {
+            IO.println("Method: " + method.getName());
+        }
+
     }
 
     /**
@@ -217,7 +232,7 @@ public class Landschaft extends Observable {
     public void schiessen() throws KeineMunitionInPanzerException {
 
         if (munitionLeer()) {
-            throw new KeineMunitionInPanzerException("Der Model.Panzer hat keine Munition zum schiessen.");
+            throw new KeineMunitionInPanzerException("Der Panzer hat keine Munition zum schiessen.");
         }
 
         _anzahlMunitionInPanzer--; //Es wird geschossen, unabhängig davon, ob etwas voraus ist.
@@ -304,7 +319,7 @@ public class Landschaft extends Observable {
             nrow = naechste[0];
             ncol = naechste[1];
 
-            if (nrow  < _spielfeldGroesseRows && nrow >= 0 && ncol  < _spielfeldGroesseCols && ncol >= 0) {
+            if (nrow < _spielfeldGroesseRows && nrow >= 0 && ncol < _spielfeldGroesseCols && ncol >= 0) {
                 if (gebeKachelTyp(nrow, ncol) == KachelTyp.leer || gebeKachelTyp(nrow, ncol) == KachelTyp.leerBlood || gebeKachelTyp(nrow, ncol) == KachelTyp.Munition) {
                     aktualisiereKachelTyp(nrow, ncol, KachelTyp.leerBlood);
                 }
@@ -525,7 +540,7 @@ public class Landschaft extends Observable {
     //-------------------------------------------------
 
     public void setztePanzerOnTile(int row, int col) {
-        if (gebeKachelTyp(row,col) == KachelTyp.Wand) {
+        if (gebeKachelTyp(row, col) == KachelTyp.Wand) {
             _spielFeld[row][col].set_Kacheltyp(KachelTyp.leer);
         }
         _positionPanzer = _spielFeld[row][col];

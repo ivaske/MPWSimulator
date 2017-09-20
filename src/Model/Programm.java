@@ -22,6 +22,9 @@ public class Programm {
     private SimpleStringProperty _textFieldContent;
     private Stage _stage;
 
+    // Anderes
+    Landschaft _landschaft;
+
     /**
      * Der default Konstruktor startet den defaultPanzer
      */
@@ -40,12 +43,11 @@ public class Programm {
 
     public Programm(String name, String savedData) {
         _name = name;
+        _landschaft = new Landschaft();
 
         //Initialisieren von PRE und POST Fix Werten
-        FILE_PREFIX = "package Model;\n" +
-                "\n" +
-                "public class " + _name + " extends Model.Panzer {\n" +
-                "    public Test(Model.Landschaft landschaft) {\n" +
+        FILE_PREFIX =                 "public class " + _name + " extends Model.Panzer {\n" +
+                "    public " + _name + "(Model.Landschaft landschaft) {\n" +
                 "        super(landschaft);\n" +
                 "    }\n" +
                 "    public ";
@@ -74,22 +76,6 @@ public class Programm {
 
     }
 
-    public String get_name() {
-        return _name;
-    }
-
-    public String get_textFieldContent() {
-        return _textFieldContent.getValue();
-    }
-
-    public void set_textFieldContent(String _textFieldContent) {
-        this._textFieldContent.set(_textFieldContent);
-        IO.println(_textFieldContent);
-    }
-
-    public Stage get_stage() {
-        return _stage;
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -99,10 +85,35 @@ public class Programm {
 
         Programm that = (Programm) obj;
 
-        if (this.get_name().equals( that.get_name())) {
+        if (this.get_name().equals(that.get_name())) {
             return true;
         } else {
             return false;
         }
     }
+
+    public Landschaft get_landschaft() {
+        return _landschaft;
+    }
+
+    public String get_name() {
+        return _name;
+    }
+
+    public String get_nameForClassloader() {
+        return "Model." + _name;
+    }
+
+    public String get_textFieldContent() {
+        return _textFieldContent.getValue();
+    }
+
+    public void set_textFieldContent(String _textFieldContent) {
+        this._textFieldContent.set(_textFieldContent);
+    }
+
+    public Stage get_stage() {
+        return _stage;
+    }
+
 }
