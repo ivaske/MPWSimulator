@@ -41,32 +41,35 @@ public class LandschaftsMouseController {
      */
     public void ClickedOnLandschaft(MouseEvent event) {
         System.out.println("Clicked On Landschaftspanel x:" + event.getX() + " y:" + event.getY());
+        if (event.getButton() == MouseButton.PRIMARY) {
 
-        int col = (int) event.getY() / LandschaftPanel.BILDGROESSE_PIXEL;
-        int row = (int) event.getX() / LandschaftPanel.BILDGROESSE_PIXEL;
-        System.out.println("Clicked On Landschaftspanel row:" + row + " col:" + col);
+            int col = (int) event.getY() / LandschaftPanel.BILDGROESSE_PIXEL;
+            int row = (int) event.getX() / LandschaftPanel.BILDGROESSE_PIXEL;
+            System.out.println("Clicked On Landschaftspanel row:" + row + " col:" + col);
 
-        if (_landschaft.get_spielFeld()[row][col] == _landschaft.get_positionPanzer()) {
-            _panzerDragging = true;
+            if (_landschaft.get_spielFeld()[row][col] == _landschaft.get_positionPanzer()) {
+                _panzerDragging = true;
+            }
+
+            switch (_placingItems.get_isSelected()) {
+                case Panzer:
+                    _landschaft.setztePanzerOnTile(row, col);
+                    break;
+                case Munition:
+                    _landschaft.setzeMunitionOnTile(row, col);
+                    break;
+                case Wall:
+                    _landschaft.setzeWallOnTile(row, col);
+                    break;
+                case Hamster:
+                    _landschaft.setzeHamsterOnTile(row, col);
+                    break;
+                case Delete:
+                    _landschaft.deleteTile(row, col);
+                    break;
+            }
         }
 
-        switch (_placingItems.get_isSelected()) {
-            case Panzer:
-                _landschaft.setztePanzerOnTile(row, col);
-                break;
-            case Munition:
-                _landschaft.setzeMunitionOnTile(row, col);
-                break;
-            case Wall:
-                _landschaft.setzeWallOnTile(row, col);
-                break;
-            case Hamster:
-                _landschaft.setzeHamsterOnTile(row, col);
-                break;
-            case Delete:
-                _landschaft.deleteTile(row, col);
-                break;
-        }
         event.consume();
     }
 

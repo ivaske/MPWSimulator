@@ -1,5 +1,7 @@
 package Model;
 
+import Controller.AktionenButtonController;
+import View.LandschaftPanel;
 import View.Simulator;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -21,9 +23,12 @@ public class Programm {
     private final String PRE_DATA = "void main() {\n" + "    }";
     private SimpleStringProperty _textFieldContent;
     private Stage _stage;
+    private AktionenButtonController _controller;
 
     // Anderes
     Landschaft _landschaft;
+    LandschaftPanel _landschaftPanel;
+    Simulator _simulator;
 
     /**
      * Der default Konstruktor startet den defaultPanzer
@@ -46,9 +51,9 @@ public class Programm {
         _landschaft = new Landschaft();
 
         //Initialisieren von PRE und POST Fix Werten
-        FILE_PREFIX =                 "public class " + _name + " extends Model.Panzer {\n" +
-                "    public " + _name + "(Model.Landschaft landschaft) {\n" +
-                "        super(landschaft);\n" +
+        FILE_PREFIX = "public class " + _name + " extends Model.Panzer {\n" +
+                "    public " + _name + "(Model.Landschaft landschaft, Controller.AktionenButtonController controller) {\n" +
+                "        super(landschaft,controller);\n" +
                 "    }\n" +
                 "    public ";
 
@@ -64,16 +69,20 @@ public class Programm {
         _textFieldContent = new SimpleStringProperty(savedData);
     }
 
+    public void set_controller(AktionenButtonController controller) {
+        this._controller = controller;
+    }
+
     public String generiereZuSpeicherneDatei() {
         return FILE_PREFIX + _textFieldContent.getValue() + FILE_POSTFIX;
     }
 
-    public void buildScene() {
+    public Simulator buildScene() {
         _stage = new Stage();
 
-        Simulator simulator = new Simulator();
-        simulator.start(_stage, this);
-
+        _simulator = new Simulator();
+        _simulator.start(_stage, this);
+        return _simulator;
     }
 
 
@@ -116,4 +125,15 @@ public class Programm {
         return _stage;
     }
 
+    public LandschaftPanel get_landschaftPanel() {
+        return _landschaftPanel;
+    }
+
+    public void set_landschaftPanel(LandschaftPanel _landschaftPanel) {
+        this._landschaftPanel = _landschaftPanel;
+    }
+
+    public Simulator get_simulator() {
+        return _simulator;
+    }
 }

@@ -36,6 +36,21 @@ public class CompileController {
         File file = ProgrammController.speichereProgramm(programm);
         compile(file);
         programm.get_landschaft().setzePanzer(createInstanceFromProgramm(programm));
+
+    }
+
+    /**
+     * Compiliert ein Programm. Speichert es zuerst.
+     *
+     * @param programm Programm, welches compiliert werden soll.
+     */
+    public static boolean trycompileSilent(Programm programm) {
+        File file = ProgrammController.speichereProgramm(programm);
+        boolean erfolg = compileSilent(file, null);
+        if (erfolg) {
+            programm.get_landschaft().setzePanzer(createInstanceFromProgramm(programm));
+        }
+        return erfolg;
     }
 
     /**
@@ -72,7 +87,9 @@ public class CompileController {
      * @return gibt zurück, ob das compilieren erfolgreich war.
      */
     public static boolean compileSilent(File file, DiagnosticCollector<JavaFileObject> diagnosticCollector) {
-
+        if (diagnosticCollector == null) {
+            diagnosticCollector = new DiagnosticCollector<>();
+        }
         JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
         StandardJavaFileManager manager = javac.getStandardFileManager(diagnosticCollector, null, null);
 
@@ -106,7 +123,9 @@ public class CompileController {
 
                 Class<?> cls = classLoader.loadClass(programm.get_name());
 
-                return (Panzer) cls.getDeclaredConstructor(Landschaft.class).newInstance(programm.get_landschaft());
+                return (Panzer) cls.getDeclaredConstructor(Landschaft.class,
+                        AktionenButtonController.class).newInstance(programm.get_landschaft(),
+                        new AktionenButtonController(programm.get_landschaft(),programm.get_simulator()));
 
 
             } else {

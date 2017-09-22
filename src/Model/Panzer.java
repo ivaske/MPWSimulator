@@ -1,8 +1,6 @@
 package Model;
 
-import Exceptions.KeineMunitionAufKachelException;
-import Exceptions.KeineMunitionInPanzerException;
-import Exceptions.VorneNichtFreiException;
+import Controller.AktionenButtonController;
 
 /**
  * Klasse des Panzers, der durch die Landschaft navigiert
@@ -14,48 +12,53 @@ import Exceptions.VorneNichtFreiException;
 public class Panzer {
 
     private final Landschaft _landschaft;
+    private AktionenButtonController _controller;
 
     /**
      * Konstruktor des Panzers. Dieser Erfordert das vorheriger Erstellen der Model.Landschaft.
      * @param landschaft Die Model.Landschaft in dem sich der Model.Panzer bewegt.
      */
-    public Panzer(Landschaft landschaft) {
+    public Panzer(Landschaft landschaft, AktionenButtonController controller) {
+        _controller = controller;
         _landschaft = landschaft;
     }
 
     /**
+     * Dise Methode wird überschrieben vom neu compilierten
+     */
+    public void main() {
+
+    }
+    /**
      * Funktion um den Model.Panzer eine Position weiter in der aktuellen Ausrichung zu bewegen.
      *
-     * @throws VorneNichtFreiException Wenn eine Wand oder der Spielfeldrand vorraus ist.
      */
-    public void vor() throws VorneNichtFreiException {
-        _landschaft.vor();
+    public void vor()  {
+        _controller.Aktion_Vor();
     }
 
     /**
      * Dreht die Model.Ausrichtung des Panzers gegen Uhrzeigersinn um 90 Grad.
      */
     public void linksUm() {
-        _landschaft.linksUm();
+        _controller.Aktion_Links_Um();
     }
 
     /**
      * Nimmt, wenn die aktuelle Model.Kachel Munition enthält, eine Einheit Munition von der Model.Kachel in den Model.Panzer auf.
      *
-     * @throws KeineMunitionAufKachelException Wird geworfen, wenn keine Munition auf der Model.Kachel liegt.
      */
-    public void nimm() throws KeineMunitionAufKachelException {
-        _landschaft.nimm();
+    public void nimm()  {
+        _controller.Aktion_Nimm();
     }
 
     /**
      * Verwendet eine Munition aus dem Model.Panzer um eine Wand auf dem Feld einen voraus in der aktuellen Model.Ausrichtung zu zerstören.
      * Verwendet auch dann eine Einheit Munition, wenn keine Wand voraus ist.
      *
-     * @throws KeineMunitionInPanzerException Wird geworfen, wenn keine Munition im Model.Panzer vorhanden ist.
      */
-    public void schiessen() throws KeineMunitionInPanzerException {
-        _landschaft.schiessen();
+    public void schiessen() {
+        _controller.Aktion_Schissen();
     }
 
     /**

@@ -1,11 +1,18 @@
 public class defaultPanzer extends Model.Panzer {
-    public defaultPanzer(Model.Landschaft landschaft) {
-        super(landschaft);
+    public defaultPanzer(Model.Landschaft landschaft, Controller.AktionenButtonController controller) {
+        super(landschaft,controller);
     }
     public void main() {
-
+vor();
+rechtsUm();
+vor();
+vor();
+vor();
+vor();
     }
 
-void Test()  {
-
+void rechtsUm() {
+linksUm();
+linksUm();
+linksUm();
 }}

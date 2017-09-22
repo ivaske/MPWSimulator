@@ -27,38 +27,41 @@ public class AktionenButtonController {
 
     }
 
-    public void Button_LinksUm_Click() {
+    public void Aktion_Links_Um() {
         _landschaft.linksUm();
     }
 
-    public void Button_Vor_Click() {
+    public void Aktion_Vor() {
         try {
             _landschaft.vor();
         } catch (VorneNichtFreiException ex) {
+            SoundController.getInstance().ErrorSoundAbspielen();
             Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
             alert.show();
         }
     }
 
-    public void Button_Nimm_Click() {
+    public void Aktion_Nimm() {
         try {
             _landschaft.nimm();
         } catch (KeineMunitionAufKachelException ex) {
+            SoundController.getInstance().ErrorSoundAbspielen();
             Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
             alert.show();
         }
     }
 
-    public void Button_Schiessen_Click() {
+    public void Aktion_Schissen() {
         try {
             _landschaft.schiessen();
         } catch (KeineMunitionInPanzerException ex) {
+            SoundController.getInstance().ErrorSoundAbspielen();
             Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
             alert.show();
         }
     }
 
-    public void Button_MunitionDa_Click() {
+    public void Abfrage_Muniton_Da() {
         boolean munitionDa = _landschaft.munitionDa();
         if (munitionDa) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Es ist Munition da.", ButtonType.OK);
@@ -69,7 +72,7 @@ public class AktionenButtonController {
         }
     }
 
-    public void Button_Munitionleer_Click() {
+    public void Abfrage_Munition_leer() {
         boolean munitionLeer = _landschaft.munitionLeer();
         if (munitionLeer) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Der Panzer hat keine Munition.", ButtonType.OK);
@@ -80,7 +83,7 @@ public class AktionenButtonController {
         }
     }
 
-    public void Button_VornFrei_Click() {
+    public void Abfrage_Vorn_Frei() {
         boolean vornFrei = _landschaft.vornFrei();
         if (vornFrei) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Vorne ist frei.", ButtonType.OK);
@@ -91,7 +94,7 @@ public class AktionenButtonController {
         }
     }
 
-    public void Button_WandVoraus_Click() {
+    public void Abfrage_Wand_Voraus() {
         boolean wandvoraus = _landschaft.wandVoraus();
         if (wandvoraus) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Vorne ist frei.", ButtonType.OK);

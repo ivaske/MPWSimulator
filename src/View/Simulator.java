@@ -4,7 +4,6 @@ import Controller.AktionenButtonController;
 import Controller.CompileController;
 import Controller.ProgrammController;
 import Model.*;
-import javafx.application.*;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,15 +13,11 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
-import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
 import java.util.Optional;
 
 /**
@@ -224,16 +219,16 @@ public class Simulator {
         _pickUpAtCharacterMenuItem = new MenuItem("Muniton im Model.Panzer");
         _turnleftMenuItem = new MenuItem("links um");
         _turnleftMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+Shift+L"));
-        _turnleftMenuItem.setOnAction(event -> _aktionenController.Button_LinksUm_Click());
+        _turnleftMenuItem.setOnAction(event -> _aktionenController.Aktion_Links_Um());
         _vorMenuItem = new MenuItem("vor");
         _vorMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+Shift+V"));
-        _vorMenuItem.setOnAction(event -> _aktionenController.Button_Vor_Click());
+        _vorMenuItem.setOnAction(event -> _aktionenController.Aktion_Vor());
         _nimmMenuItem = new MenuItem("nimm");
         _nimmMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+Shift+N"));
-        _nimmMenuItem.setOnAction(event -> _aktionenController.Button_Nimm_Click());
+        _nimmMenuItem.setOnAction(event -> _aktionenController.Aktion_Nimm());
         _gibMenuItem = new MenuItem("schiessen");
         _gibMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+Shift+S"));
-        _gibMenuItem.setOnAction(event -> _aktionenController.Button_Schiessen_Click());
+        _gibMenuItem.setOnAction(event -> _aktionenController.Aktion_Schissen());
         _charakterMenu.getItems().addAll(_pickUpAtCharacterMenuItem, _turnleftMenuItem, _vorMenuItem, _nimmMenuItem, _gibMenuItem);
 
         _simulationMenu = new Menu("_Simulation");
@@ -302,23 +297,23 @@ public class Simulator {
 
         _buttonAbfrageCharakterPickUps = new Button();
         _buttonAbfrageCharakterPickUps.setGraphic(new ImageView(new Image(getClass().getResource("/resources/tankammo24.png").toString())));
-        _buttonAbfrageCharakterPickUps.setOnAction(event -> _aktionenController.Button_Munitionleer_Click());
+        _buttonAbfrageCharakterPickUps.setOnAction(event -> _aktionenController.Abfrage_Munition_leer());
 
         _buttonAktionLinksUm = new Button();
         _buttonAktionLinksUm.setGraphic(new ImageView(new Image(getClass().getResource("/resources/tankleft24.png").toString())));
-        _buttonAktionLinksUm.setOnAction(event -> _aktionenController.Button_LinksUm_Click());
+        _buttonAktionLinksUm.setOnAction(event -> _aktionenController.Aktion_Links_Um());
 
         _buttonAktionVor = new Button();
         _buttonAktionVor.setGraphic(new ImageView(new Image(getClass().getResource("/resources/tankvor24.png").toString())));
-        _buttonAktionVor.setOnAction(event -> _aktionenController.Button_Vor_Click());
+        _buttonAktionVor.setOnAction(event -> _aktionenController.Aktion_Vor());
 
         _buttonAktionNimmPickUp = new Button();
         _buttonAktionNimmPickUp.setGraphic(new ImageView(new Image(getClass().getResource("/resources/ammoplus24.png").toString())));
-        _buttonAktionNimmPickUp.setOnAction(event -> _aktionenController.Button_Nimm_Click());
+        _buttonAktionNimmPickUp.setOnAction(event -> _aktionenController.Aktion_Nimm());
 
         _buttonAktionGibPickUp = new Button();
         _buttonAktionGibPickUp.setGraphic(new ImageView(new Image(getClass().getResource("/resources/fadenkreuz24.png").toString())));
-        _buttonAktionGibPickUp.setOnAction(event -> _aktionenController.Button_Schiessen_Click());
+        _buttonAktionGibPickUp.setOnAction(event -> _aktionenController.Aktion_Schissen());
 
         _buttonAktionGenerateRandomMap = new Button();
         _buttonAktionGenerateRandomMap.setGraphic(new ImageView(new Image(getClass().getResource("/resources/world24.png").toString())));
@@ -326,6 +321,7 @@ public class Simulator {
 
         _buttonStartSimulation = new Button();
         _buttonStartSimulation.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Play24.gif").toString())));
+        _buttonStartSimulation.setOnAction(event -> _programm.get_landschaft().get_panzer().main());
 
         _buttonPauseSimulation = new Button();
         _buttonPauseSimulation.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Pause24.gif").toString())));
@@ -366,10 +362,10 @@ public class Simulator {
         //Spielfeld zeichnen:
         //Spielfeld wird nach jedem Zug komplett neu gezeichnet!
 
-        _landschaftpanel = new LandschaftPanel(_landschaft, _placingItems, _scrollPane);
-        _landschaftpanel.zeichneSpielfeld();
+        _programm.set_landschaftPanel(new LandschaftPanel(_landschaft, _placingItems, _scrollPane));
+        _programm.get_landschaftPanel().zeichneSpielfeld();
 
-        _scrollPane.setContent(_landschaftpanel);
+        _scrollPane.setContent(_programm.get_landschaftPanel());
 
     }
 

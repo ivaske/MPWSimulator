@@ -1,15 +1,15 @@
 package View;
 
 import Controller.LandschaftsMouseController;
-import Model.Kachel;
-import Model.KachelTyp;
-import Model.Landschaft;
-import Model.PlacingItems;
+import Model.*;
 import Utils.Observer;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import javafx.animation.RotateTransition;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -23,12 +23,18 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Yannick Vaske
  * @version 15.09.2017
- *
+ * <p>
  * Diese Klasse erbt von einere Region und wird im Content-Panel auf angezeigt. Sie gibt das Model visuell wieder.
- *
  */
 public class LandschaftPanel extends Region implements Observer {
     private Landschaft _landschaft;
@@ -36,17 +42,20 @@ public class LandschaftPanel extends Region implements Observer {
     private LandschaftsMouseController _mouseController;
     private ScrollPane _parent;
     private Canvas _canvas;
+    private ContextMenu _contextMenu;
 
     public static final int BILDGROESSE_PIXEL = 32;
     public static final int ANZAHL_MUNITION_X_OFFSET = -8;
     public static final int ANZAHL_MUNITION_Y_OFFSET = 12;
+    public static final String METHOD_POST_FIX = "();";
 
 
     /**
      * Konstruktur der LandschaftsPanel Klasse. Es wird das Model, das übergeordnete Pane, in welchem diese Region angezeigt werden soll und die Placing Items benötigt.
-     * @param landschaft Das Model
+     *
+     * @param landschaft   Das Model
      * @param placingItems Der aktuelle Zustand der ausgewählten Buttons
-     * @param parent Das übergeordnete Pane.
+     * @param parent       Das übergeordnete Pane.
      */
     public LandschaftPanel(Landschaft landschaft, PlacingItems placingItems, ScrollPane parent) {
         this._landschaft = landschaft;
@@ -69,7 +78,7 @@ public class LandschaftPanel extends Region implements Observer {
         _canvas.setOnDragDetected(event -> _mouseController.DragDetectedLandschaft(event, _canvas));
         _canvas.setOnDragOver(event -> _mouseController.OnDragOver(event));
         _canvas.setOnDragDropped(event -> _mouseController.OnDragDropped(event));
-
+        _canvas.setOnContextMenuRequested(event -> aktualisiereContextMenu(_landschaft.get_panzer(), event));
 
         _canvas.setWidth(_landschaft.get_spielfeldGroesseRows() * BILDGROESSE_PIXEL);
         _canvas.setHeight(_landschaft.get_spielfeldGroesseCols() * BILDGROESSE_PIXEL);
@@ -147,6 +156,75 @@ public class LandschaftPanel extends Region implements Observer {
         //Das Canvas in die Region zeichnen
         getChildren().clear();
         getChildren().add(_canvas);
+    }
+
+    /**
+     * Öffnet das ContextMenu
+     *
+     * @param panzer Der Panzer der zur Erstellung des Context-Menu verwendet werden soll.
+     */
+    public void aktualisiereContextMenu(Panzer panzer, ContextMenuEvent event) {
+
+        if (_contextMenu != null) {
+            _contextMenu.hide();
+        }
+
+        _contextMenu = new ContextMenu();
+
+        List<MenuItem> menuItemList = new ArrayList<>();
+
+        //Zuerst die default Methoden vom original Panzer implementieren
+
+        for (Method method : Panzer.class.getDeclaredMethods()) {
+            MenuItem item = createMenuItem(method, panzer);
+            if (item != null) {
+                menuItemList.add(item);
+            }
+        }
+
+        //Falls es nicht der originale Hamster ist, der übergeben wird, werden die neuen Methoden auch hinzugefügt
+        if (panzer.getClass() != Panzer.class) {
+            for (Method method : panzer.getClass().getDeclaredMethods()) {
+                MenuItem item = createMenuItem(method, panzer);
+                if (item != null) {
+                    menuItemList.add(item);
+                }
+            }
+        }
+
+        _contextMenu.getItems().addAll(menuItemList);
+
+        _contextMenu.show(_canvas, event.getScreenX(), event.getScreenY());
+    }
+
+    private MenuItem createMenuItem(Method method, Panzer panzer) {
+        //Nur Public und normale Modifier anzeigen
+        if ((method.getModifiers() == Modifier.PUBLIC || method.getModifiers() == 0) && !method.getName().equals("main") ) {
+            MenuItem menuItem = new MenuItem(method.getName() + METHOD_POST_FIX);
+            menuItem.setOnAction(event -> {
+                try {
+                    method.invoke(panzer);
+                } catch (IllegalAccessException ex) {
+                    ex.printStackTrace();
+                } catch (InvocationTargetException ex) {
+                    ex.printStackTrace();
+                }
+            });
+            if (method.getParameterCount() > 0) {
+                menuItem.setDisable(true);
+            }
+            if (!method.getReturnType().toString().equals("void")) {
+                menuItem.setDisable(true);
+            }
+
+            if (method.isAnnotationPresent(Invisible.class)) {
+                return null;
+            }
+
+            return menuItem;
+        } else {
+            return null;
+        }
     }
 
 

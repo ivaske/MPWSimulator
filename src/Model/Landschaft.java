@@ -1,5 +1,6 @@
 package Model;
 
+import Controller.AktionenButtonController;
 import Exceptions.KeineMunitionAufKachelException;
 import Exceptions.KeineMunitionInPanzerException;
 import Exceptions.VorneNichtFreiException;
@@ -38,7 +39,7 @@ public class Landschaft extends Observable {
 
     /**
      * Der Konstruktor der Landschaft. Dieser Initialisiert das Spielfeld auf die Standardgröße
-     * ,den Model.Panzer und gibt in einem neuen Spielfeld einige Gegenstände vor.
+     * ,den Panzer und gibt in einem neuen Spielfeld einige Gegenstände vor.
      */
     public Landschaft() {
         this(STANDARD_ROWS, STANDARD_COLS);
@@ -46,7 +47,7 @@ public class Landschaft extends Observable {
 
     /**
      * Der Konstruktor der Landschaft. Dieser Initialisiert das Spielfeld auf die übergebene Größe
-     * ,den Model.Panzer und gibt in einem neuen Spielfeld einige Gegenstände vor.
+     * ,den Panzer und gibt in einem neuen Spielfeld einige Gegenstände vor.
      *
      * @param spielfeldGroesseRows Anzahl der Reihen des Spielfelds.
      * @param spielfeldGroesseCols Anzahl der Spalten des Spielfelds.
@@ -91,11 +92,10 @@ public class Landschaft extends Observable {
     }
 
     /**
-     * Es wird ein Model.Panzer initialisiert und eine Referenz auf die Model.Landschaft wird übergeben.
-     * Der Model.Panzer wird dabei auf das Feld 5|5 gesetzt mit der Model.Ausrichtung nach Osten.
+     * Es wird ein Panzer initialisiert und eine Referenz auf die Landschaft wird übergeben.
+     * Der Panzer wird dabei auf das Feld 5|5 gesetzt mit der Ausrichtung nach Osten.
      */
     private void initialisierePanzer() {
-        _panzer = new Panzer(this);
         _positionPanzer = _spielFeld[0][0];
         aktualisiereKachelTyp(0, 0, KachelTyp.leer);
 
@@ -115,6 +115,10 @@ public class Landschaft extends Observable {
             IO.println("Method: " + method.getName());
         }
 
+    }
+
+    public Panzer get_panzer() {
+        return _panzer;
     }
 
     /**
@@ -167,7 +171,7 @@ public class Landschaft extends Observable {
     //-----------------Methoden des Panzers-------------
 
     /**
-     * Funktion um den Model.Panzer eine Position weiter in der aktuellen Ausrichung zu bewegen.
+     * Funktion um den Panzer eine Position weiter in der aktuellen Ausrichung zu bewegen.
      *
      * @throws VorneNichtFreiException Wenn eine Wand oder der Spielfeldrand vorraus ist.
      */
@@ -177,14 +181,14 @@ public class Landschaft extends Observable {
             int[] naechste = gebeNaechsteKoordinate();
             _positionPanzer = _spielFeld[naechste[0]][naechste[1]];
         } else {
-            throw new VorneNichtFreiException("Der Weg ist in der aktuellen Model.Ausrichtung nicht frei.");
+            throw new VorneNichtFreiException("Der Weg ist in der aktuellen Ausrichtung nicht frei.");
         }
         notifyObserver();
         printToConsole();
     }
 
     /**
-     * Dreht die Model.Ausrichtung des Panzers gegen Uhrzeigersinn um 90 Grad.
+     * Dreht die Ausrichtung des Panzers gegen Uhrzeigersinn um 90 Grad.
      */
     public void linksUm() {
         switch (_ausrichtung) {
@@ -206,13 +210,13 @@ public class Landschaft extends Observable {
     }
 
     /**
-     * Nimmt, wenn die aktuelle Model.Kachel Munition enthält, eine Einheit Munition von der Model.Kachel in den Model.Panzer auf.
+     * Nimmt, wenn die aktuelle Kachel Munition enthält, eine Einheit Munition von der Kachel in den Panzer auf.
      *
-     * @throws KeineMunitionAufKachelException Wird geworfen, wenn keine Munition auf der Model.Kachel liegt.
+     * @throws KeineMunitionAufKachelException Wird geworfen, wenn keine Munition auf der Kachel liegt.
      */
     public void nimm() throws KeineMunitionAufKachelException {
         if (!munitionDa()) {
-            throw new KeineMunitionAufKachelException("Es liegt keine Munition auf der Model.Kachel.");
+            throw new KeineMunitionAufKachelException("Es liegt keine Munition auf der Kachel.");
         }
 
         _anzahlMunitionInPanzer++;
@@ -224,10 +228,10 @@ public class Landschaft extends Observable {
     }
 
     /**
-     * Verwendet eine Munition aus dem Model.Panzer um eine Wand auf dem Feld einen voraus in der aktuellen Model.Ausrichtung zu zerstören.
+     * Verwendet eine Munition aus dem Panzer um eine Wand auf dem Feld einen voraus in der aktuellen Ausrichtung zu zerstören.
      * Verwendet auch dann eine Einheit Munition, wenn keine Wand voraus ist.
      *
-     * @throws KeineMunitionInPanzerException Wird geworfen, wenn keine Munition im Model.Panzer vorhanden ist.
+     * @throws KeineMunitionInPanzerException Wird geworfen, wenn keine Munition im Panzer vorhanden ist.
      */
     public void schiessen() throws KeineMunitionInPanzerException {
 
@@ -251,7 +255,7 @@ public class Landschaft extends Observable {
     }
 
     /**
-     * Fragt ab, ob das Feld einen voraus in der aktuellen Model.Ausrichtung für den Model.Panzer frei ist.
+     * Fragt ab, ob das Feld einen voraus in der aktuellen Ausrichtung für den Panzer frei ist.
      *
      * @return Boolean, ob das Feld frei ist.
      */
@@ -268,16 +272,16 @@ public class Landschaft extends Observable {
     }
 
     /**
-     * Fragt ab, ob die Munition im Model.Panzer leer ist.
+     * Fragt ab, ob die Munition im Panzer leer ist.
      *
-     * @return Boolean, ob die Munition im Model.Panzer leer ist.
+     * @return Boolean, ob die Munition im Panzer leer ist.
      */
     public boolean munitionLeer() {
         return _anzahlMunitionInPanzer == 0;
     }
 
     /**
-     * Fragt ab, ob auf der aktuellen Model.Kachel Munition vorhanden ist.
+     * Fragt ab, ob auf der aktuellen Kachel Munition vorhanden ist.
      *
      * @return Boolean, ob das Feld Munition beinhaltet
      */
@@ -387,23 +391,23 @@ public class Landschaft extends Observable {
     }
 
     /**
-     * Durch diese Prozedur kann eine spezifische Model.Kachel gesetzt werden an einer bestimmten Position.
+     * Durch diese Prozedur kann eine spezifische Kachel gesetzt werden an einer bestimmten Position.
      *
-     * @param row    Die Zeile in der die Model.Kachel gesetzt wird.
-     * @param col    Die Spalte in der die Model.Kachel gesetzt wird.
-     * @param kachel Die Model.Kachel, die gesetzt wird.
+     * @param row    Die Zeile in der die Kachel gesetzt wird.
+     * @param col    Die Spalte in der die Kachel gesetzt wird.
+     * @param kachel Die Kachel, die gesetzt wird.
      */
     private void setzteKachel(int row, int col, Kachel kachel) {
         _spielFeld[row][col] = kachel;
     }
 
     /**
-     * Aktualisiert eine vorhandene Model.Kachel zu einem übergebenen Typ und gibt die aktualisierte Model.Kachel zurück.
+     * Aktualisiert eine vorhandene Kachel zu einem übergebenen Typ und gibt die aktualisierte Kachel zurück.
      *
-     * @param row       Die Zeile in der die Model.Kachel gesetzt wird.
-     * @param col       Die Spalte in der die Model.Kachel gesetzt wird.
-     * @param kachelTyp Der neue Kacheltyp, der der Model.Kachel zugewiesen werden soll.
-     * @return Gibt die aktualisierte Model.Kachel zurück.
+     * @param row       Die Zeile in der die Kachel gesetzt wird.
+     * @param col       Die Spalte in der die Kachel gesetzt wird.
+     * @param kachelTyp Der neue Kacheltyp, der der Kachel zugewiesen werden soll.
+     * @return Gibt die aktualisierte Kachel zurück.
      */
     private Kachel aktualisiereKachelTyp(int row, int col, KachelTyp kachelTyp) {
         _spielFeld[row][col].set_Kacheltyp(kachelTyp);

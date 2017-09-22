@@ -1,6 +1,7 @@
 package Controller;
 
 import Model.IO;
+import Model.Panzer;
 import Model.Programm;
 import com.sun.org.apache.xml.internal.serialize.LineSeparator;
 import javafx.application.Application;
@@ -62,8 +63,15 @@ public class ProgrammController extends Application {
         File file = new File(path.toString());
 
         if (file.exists()) {
-            openFile(file);
-            CompileController.compileSilent(file, new DiagnosticCollector<>());
+            Programm programm = openFile(file);
+            if (programm != null) {
+                boolean erfolg = CompileController.trycompileSilent(programm);
+                if (!erfolg) {
+                    programm.get_landschaft().setzePanzer(new Panzer(programm.get_landschaft(),
+                            new AktionenButtonController(programm.get_landschaft(), programm.get_simulator())));
+                }
+
+            }
         } else {
             //Initialisiere DefaultHamster
             Programm defaultProgramm = new Programm();
@@ -152,17 +160,17 @@ public class ProgrammController extends Application {
 
     }
 
-    public static void openFile(File file) {
+    public static Programm openFile(File file) {
 
         if (file == null || !file.exists()) {
-            return;
+            return null;
         }
 
         String programmName = file.getName().substring(0, file.getName().length() - DATEIENDUNG.length());
         if (checkProgrammOpen(programmName)) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Dieses Programm ist bereits geöffnet.");
             alert.showAndWait();
-            return;
+            return null;
         }
 
         //try-closeable
@@ -176,11 +184,13 @@ public class ProgrammController extends Application {
             _listProgramme.add(programm);
             programm.buildScene();
 
+            return programm;
         } catch (FileNotFoundException ex) {
             IO.println(ex.getMessage());
         } catch (IOException ex) {
             IO.println(ex.getMessage());
         }
+        return null;
     }
 
     private static boolean checkProgrammOpen(String programmName) {
