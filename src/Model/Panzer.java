@@ -16,6 +16,7 @@ public class Panzer {
 
     /**
      * Konstruktor des Panzers. Dieser Erfordert das vorheriger Erstellen der Model.Landschaft.
+     *
      * @param landschaft Die Model.Landschaft in dem sich der Model.Panzer bewegt.
      */
     public Panzer(Landschaft landschaft, AktionenButtonController controller) {
@@ -26,14 +27,15 @@ public class Panzer {
     /**
      * Dise Methode wird überschrieben vom neu compilierten
      */
+    @Invisible
     public void main() {
-
+       
     }
+
     /**
      * Funktion um den Model.Panzer eine Position weiter in der aktuellen Ausrichung zu bewegen.
-     *
      */
-    public void vor()  {
+    public void vor() {
         _controller.Aktion_Vor();
     }
 
@@ -46,16 +48,14 @@ public class Panzer {
 
     /**
      * Nimmt, wenn die aktuelle Model.Kachel Munition enthält, eine Einheit Munition von der Model.Kachel in den Model.Panzer auf.
-     *
      */
-    public void nimm()  {
+    public void nimm() {
         _controller.Aktion_Nimm();
     }
 
     /**
      * Verwendet eine Munition aus dem Model.Panzer um eine Wand auf dem Feld einen voraus in der aktuellen Model.Ausrichtung zu zerstören.
      * Verwendet auch dann eine Einheit Munition, wenn keine Wand voraus ist.
-     *
      */
     public void schiessen() {
         _controller.Aktion_Schissen();

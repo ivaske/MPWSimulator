@@ -18,19 +18,19 @@ public class Observable {
         this._listObservables = new ArrayList<>();
     }
 
-    public void addObserver(Observer observer) {
+    public synchronized void addObserver(Observer observer) {
         if (!_listObservables.contains(observer)) {
             _listObservables.add(observer);
         }
     }
 
-    public void deleteObserver(Observer observer) {
+    public synchronized void deleteObserver(Observer observer) {
         if (_listObservables.contains(observer)) {
             _listObservables.remove(observer);
         }
     }
 
-    public void notifyObserver() {
+    public synchronized void notifyObserver() {
         for (Observer observer : _listObservables) {
             observer.update();
         }

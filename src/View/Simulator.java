@@ -4,6 +4,10 @@ import Controller.AktionenButtonController;
 import Controller.CompileController;
 import Controller.ProgrammController;
 import Model.*;
+import Simulation.SimulationButton;
+import Simulation.SimulationThread;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -319,17 +323,33 @@ public class Simulator {
         _buttonAktionGenerateRandomMap.setGraphic(new ImageView(new Image(getClass().getResource("/resources/world24.png").toString())));
         _buttonAktionGenerateRandomMap.setOnAction(event -> _aktionenController.Button_RandomMap_Click());
 
-        _buttonStartSimulation = new Button();
+        _buttonStartSimulation = new ObservedSimulationButton(SimulationButton.START,_programm.get_manager() );
         _buttonStartSimulation.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Play24.gif").toString())));
-        _buttonStartSimulation.setOnAction(event -> _programm.get_landschaft().get_panzer().main());
+        _buttonStartSimulation.setOnAction(event -> _programm.get_manager().startSimulation());
 
-        _buttonPauseSimulation = new Button();
+        _buttonPauseSimulation = new ObservedSimulationButton(SimulationButton.PAUSE,_programm.get_manager());
+        _buttonPauseSimulation.setDisable(true);
+        _buttonPauseSimulation.setOnAction(event -> _programm.get_manager().pauseSimulation());
         _buttonPauseSimulation.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Pause24.gif").toString())));
 
-        _buttonStopSimulation = new Button();
+        _buttonStopSimulation = new ObservedSimulationButton(SimulationButton.STOP,_programm.get_manager());
+        _buttonStopSimulation.setDisable(true);
+        _buttonStopSimulation.setOnAction(event -> _programm.get_manager().stopSimulation());
         _buttonStopSimulation.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Stop24.gif").toString())));
 
         _slider = new Slider();
+        _slider.setMin(0);
+        _slider.setMax(100);
+        _slider.setShowTickLabels(true);
+        _slider.setShowTickMarks(true);
+        _slider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                _programm.get_manager().set_simSpeed(newValue.intValue());
+            }
+        });
+        _slider.setValue(50);
+
 
         _toolbar = new ToolBar();
         _toolbar.getItems().addAll(_buttonNew, _buttonOpen, new Separator(), _buttonSave, _buttonCompile,

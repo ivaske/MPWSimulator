@@ -184,7 +184,7 @@ public class Landschaft extends Observable {
             throw new VorneNichtFreiException("Der Weg ist in der aktuellen Ausrichtung nicht frei.");
         }
         notifyObserver();
-        printToConsole();
+        //printToConsole();
     }
 
     /**

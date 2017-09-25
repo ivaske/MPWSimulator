@@ -5,6 +5,9 @@ import Model.*;
 import Utils.Observer;
 import com.sun.org.apache.xpath.internal.operations.Mod;
 import javafx.animation.RotateTransition;
+import javafx.application.Platform;
+import javafx.beans.binding.When;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -83,6 +86,14 @@ public class LandschaftPanel extends Region implements Observer {
         _canvas.setWidth(_landschaft.get_spielfeldGroesseRows() * BILDGROESSE_PIXEL);
         _canvas.setHeight(_landschaft.get_spielfeldGroesseCols() * BILDGROESSE_PIXEL);
         _parent.setPrefSize(this.getWidth() + 64, this.getHeight() + 64);
+        _canvas.layoutXProperty()
+                .bind(new
+                        When(_parent.widthProperty().subtract(_canvas.widthProperty()).divide(2).greaterThan(0))
+                        .then(_parent.widthProperty().subtract(_canvas.widthProperty()).divide(2)).otherwise(0));
+        _canvas.layoutYProperty()
+                .bind(new
+                        When(_parent.heightProperty().subtract(_canvas.heightProperty()).divide(2).greaterThan(0))
+                        .then(_parent.heightProperty().subtract(_canvas.heightProperty()).divide(2)).otherwise(0));
 
 
         GraphicsContext graphicsContext = _canvas.getGraphicsContext2D();
@@ -93,7 +104,7 @@ public class LandschaftPanel extends Region implements Observer {
         Image imageAmmo = new Image(getClass().getResource("/resources/ammo1-32.png").toString());
 
         //Landschaft zeichnen:
-        graphicsContext.setFill(Color.LIGHTGREEN);
+        graphicsContext.setFill(Color.LIGHTBLUE);
 
 
         for (int col = 0; col < _landschaft.get_spielfeldGroesseCols(); col++) {
@@ -155,6 +166,8 @@ public class LandschaftPanel extends Region implements Observer {
 
         //Das Canvas in die Region zeichnen
         getChildren().clear();
+        this.getChildren().add(new ImageView(new Image(getClass().getResource("/resources/tankWallpaper.jpg").toString())));
+
         getChildren().add(_canvas);
     }
 
@@ -199,7 +212,7 @@ public class LandschaftPanel extends Region implements Observer {
 
     private MenuItem createMenuItem(Method method, Panzer panzer) {
         //Nur Public und normale Modifier anzeigen
-        if ((method.getModifiers() == Modifier.PUBLIC || method.getModifiers() == 0) && !method.getName().equals("main") ) {
+        if (method.getModifiers() == Modifier.PUBLIC || method.getModifiers() == 0) {
             MenuItem menuItem = new MenuItem(method.getName() + METHOD_POST_FIX);
             menuItem.setOnAction(event -> {
                 try {
@@ -238,6 +251,10 @@ public class LandschaftPanel extends Region implements Observer {
 
     @Override
     public void update() {
-        zeichneSpielfeld();
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(this::zeichneSpielfeld);
+        } else {
+            zeichneSpielfeld();
+        }
     }
 }

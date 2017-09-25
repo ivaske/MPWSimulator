@@ -1,6 +1,7 @@
 package Model;
 
 import Controller.AktionenButtonController;
+import Simulation.SimulationManager;
 import View.LandschaftPanel;
 import View.Simulator;
 import javafx.beans.property.SimpleStringProperty;
@@ -26,9 +27,11 @@ public class Programm {
     private AktionenButtonController _controller;
 
     // Anderes
-    Landschaft _landschaft;
-    LandschaftPanel _landschaftPanel;
-    Simulator _simulator;
+    private Landschaft _landschaft;
+    private LandschaftPanel _landschaftPanel;
+    private Simulator _simulator;
+    private SimulationManager _manager;
+
 
     /**
      * Der default Konstruktor startet den defaultPanzer
@@ -49,6 +52,7 @@ public class Programm {
     public Programm(String name, String savedData) {
         _name = name;
         _landschaft = new Landschaft();
+        _manager = new SimulationManager(_landschaft);
 
         //Initialisieren von PRE und POST Fix Werten
         FILE_PREFIX = "public class " + _name + " extends Model.Panzer {\n" +
@@ -135,5 +139,9 @@ public class Programm {
 
     public Simulator get_simulator() {
         return _simulator;
+    }
+
+    public SimulationManager get_manager() {
+        return _manager;
     }
 }
