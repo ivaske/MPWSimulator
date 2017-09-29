@@ -31,19 +31,22 @@ public class SimulationThread extends Thread implements Observer {
 
     @Override
     public void update() {
-        try {
-            sleep(_manager.get_simSpeed() * 15 + 50);
+        if (currentThread().getClass() == SimulationThread.class) {
 
-            while (_manager.get_state() == SimulationState.PAUSED) {
-                sleep(100);
+            try {
+                sleep(_manager.get_simSpeed() * 15 + 50);
+
+                while (_manager.get_state() == SimulationState.PAUSED) {
+                    sleep(100);
+                }
+
+            } catch (InterruptedException ex) {
+                interrupt();
+
             }
-
-        } catch (InterruptedException ex) {
-            interrupt();
-
-        }
-        if (_manager.get_state() == SimulationState.STOPED) {
-            throw new RuntimeException("Simulation has stopped.");
+            if (_manager.get_state() == SimulationState.STOPED) {
+                throw new RuntimeException("Simulation has stopped.");
+            }
         }
     }
 

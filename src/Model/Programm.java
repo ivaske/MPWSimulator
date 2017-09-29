@@ -90,6 +90,7 @@ public class Programm {
     }
 
 
+
     @Override
     public boolean equals(Object obj) {
         if (obj.getClass() != this.getClass()) {

@@ -2,13 +2,17 @@ package Model;
 
 import javafx.scene.image.ImageView;
 
+import java.io.Serializable;
+
 /**
  * Klasse der Kachel, aus denen die Landschaft besteht.
  * @author Yannick Vaske
  * @version 17.08.2017
  * @see Landschaft
  */
-public class Kachel {
+public class Kachel implements Serializable {
+    static final long serialVersionUID = 2;
+
 
     private KachelTyp _typ;
     private int _anzahlMunition;

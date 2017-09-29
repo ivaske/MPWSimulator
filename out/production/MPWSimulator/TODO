@@ -4,3 +4,4 @@ TODO:
 2.  Region mittig anordnen: Code in E-Mail von Ole
 3.  Simulation über Simulation Manager mit Observer handlen
 3.1 Im Update dann das sleep implementieren
+4. In Landschaft die getter und setter auch synchronized

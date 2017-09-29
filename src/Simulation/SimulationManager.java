@@ -7,7 +7,7 @@ import Utils.Observable;
 public class SimulationManager extends Observable {
 
     private Landschaft _landschaft;
-    private int _simSpeed;
+    private volatile int _simSpeed;
     private SimulationThread _simulation;
     private SimulationButton _button;
     private volatile SimulationState _state;
