@@ -18,8 +18,8 @@ import java.util.Random;
  * @see Kachel
  */
 public class Landschaft extends Observable {
-    private static final int STANDARD_ROWS = 10;
-    private static final int STANDARD_COLS = 10;
+    private static final int STANDARD_ROWS = 15;
+    private static final int STANDARD_COLS = 15;
     private static final int STANDARD_SEED = 1540434588;
 
     private int _spielfeldGroesseRows;

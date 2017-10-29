@@ -2,8 +2,11 @@ package Model;
 
 import javafx.scene.image.ImageView;
 
+
+
 /**
  * Klasse der Kachel, aus denen die Landschaft besteht.
+ *
  * @author Yannick Vaske
  * @version 17.08.2017
  * @see Landschaft
@@ -20,7 +23,11 @@ public class Kachel {
 
     public Kachel(KachelTyp typ) {
         _typ = typ;
+
+
+
     }
+
 
     public void set_Kacheltyp(KachelTyp _typ) {
         this._typ = _typ;

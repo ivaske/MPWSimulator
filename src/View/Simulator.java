@@ -323,16 +323,16 @@ public class Simulator {
         _buttonAktionGenerateRandomMap.setGraphic(new ImageView(new Image(getClass().getResource("/resources/world24.png").toString())));
         _buttonAktionGenerateRandomMap.setOnAction(event -> _aktionenController.Button_RandomMap_Click());
 
-        _buttonStartSimulation = new ObservedSimulationButton(SimulationButton.START,_programm.get_manager() );
+        _buttonStartSimulation = new ObservedSimulationButton(SimulationButton.START, _programm.get_manager());
         _buttonStartSimulation.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Play24.gif").toString())));
         _buttonStartSimulation.setOnAction(event -> _programm.get_manager().startSimulation());
 
-        _buttonPauseSimulation = new ObservedSimulationButton(SimulationButton.PAUSE,_programm.get_manager());
+        _buttonPauseSimulation = new ObservedSimulationButton(SimulationButton.PAUSE, _programm.get_manager());
         _buttonPauseSimulation.setDisable(true);
         _buttonPauseSimulation.setOnAction(event -> _programm.get_manager().pauseSimulation());
         _buttonPauseSimulation.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Pause24.gif").toString())));
 
-        _buttonStopSimulation = new ObservedSimulationButton(SimulationButton.STOP,_programm.get_manager());
+        _buttonStopSimulation = new ObservedSimulationButton(SimulationButton.STOP, _programm.get_manager());
         _buttonStopSimulation.setDisable(true);
         _buttonStopSimulation.setOnAction(event -> _programm.get_manager().stopSimulation());
         _buttonStopSimulation.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Stop24.gif").toString())));
@@ -407,6 +407,11 @@ public class Simulator {
         gridPane.add(labelCols, 1, 0);
         gridPane.add(textField_Cols, 1, 1);
 
+        Button okButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
+
+        textField_Rows.setOnKeyReleased(event -> checkDialogInputs(textField_Rows, textField_Cols, okButton));
+        textField_Cols.setOnKeyReleased(event -> checkDialogInputs(textField_Rows, textField_Cols, okButton));
+
         dialog.getDialogPane().setContent(gridPane);
         Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
         stage.getIcons().add(new Image("/resources/Panzer24.png"));
@@ -423,6 +428,14 @@ public class Simulator {
                 alert.show();
             }
 
+        }
+    }
+
+    private void checkDialogInputs(TextField rows, TextField cols, Button okButton) {
+        if (isNumeric(rows.getText()) && isNumeric(cols.getText())) {
+            okButton.setDisable(false);
+        } else {
+            okButton.setDisable(true);
         }
     }
 

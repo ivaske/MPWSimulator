@@ -22,7 +22,7 @@ public class SimulationThread extends Thread implements Observer {
             _landschaft.addObserver(this);
             _landschaft.get_panzer().main(); //Main-Methode des Panzers aufrufen
         } catch (RuntimeException ex) {
-
+            ex.printStackTrace();
         } finally {
             _landschaft.deleteObserver(this);
             _manager.stopSimulation();
@@ -32,10 +32,13 @@ public class SimulationThread extends Thread implements Observer {
     @Override
     public void update() {
         try {
-            sleep(_manager.get_simSpeed() * 15 + 50);
+            if (!Platform.isFxApplicationThread()) {
+                IO.println(_manager.get_simSpeed());
+                sleep( (100-_manager.get_simSpeed()) * 15 + 50);
 
-            while (_manager.get_state() == SimulationState.PAUSED) {
-                sleep(100);
+                if (_manager.get_state() == SimulationState.PAUSED) {
+                    this.wait();
+                }
             }
 
         } catch (InterruptedException ex) {

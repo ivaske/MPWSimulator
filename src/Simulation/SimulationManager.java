@@ -35,6 +35,7 @@ public class SimulationManager extends Observable {
 
     public void resumeSimulation() {
         _state = SimulationState.RUNNING;
+        _simulation.notifyAll();
 
     }
 

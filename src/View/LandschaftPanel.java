@@ -97,9 +97,9 @@ public class LandschaftPanel extends Region implements Observer {
 
 
         GraphicsContext graphicsContext = _canvas.getGraphicsContext2D();
-
         Image image = null;
-        Image imageWall = new Image(getClass().getResource("/resources/Wall32.png").toString());
+        Image imageTerrain = new Image(getClass().getResource("/resources/terrain32.png").toString());
+        Image imageWall = new Image(getClass().getResource("/resources/wall2_32.png").toString());
         Image imageBlood = new Image(getClass().getResource("/resources/Tile32blood.png").toString());
         Image imageAmmo = new Image(getClass().getResource("/resources/ammo1-32.png").toString());
 
@@ -110,7 +110,8 @@ public class LandschaftPanel extends Region implements Observer {
         for (int col = 0; col < _landschaft.get_spielfeldGroesseCols(); col++) {
             for (int row = 0; row < _landschaft.get_spielfeldGroesseRows(); row++) {
                 //leere Kacheln zeichnen:
-                graphicsContext.fillRect(row * BILDGROESSE_PIXEL, col * BILDGROESSE_PIXEL, BILDGROESSE_PIXEL, BILDGROESSE_PIXEL);
+                //graphicsContext.fillRect(row * BILDGROESSE_PIXEL, col * BILDGROESSE_PIXEL, BILDGROESSE_PIXEL, BILDGROESSE_PIXEL);
+                graphicsContext.drawImage(imageTerrain, row * BILDGROESSE_PIXEL, col * BILDGROESSE_PIXEL);
                 graphicsContext.strokeRect(row * BILDGROESSE_PIXEL, col * BILDGROESSE_PIXEL, BILDGROESSE_PIXEL, BILDGROESSE_PIXEL);
 
                 //Falls BLut auf der Kachel ist, wird sie hier gezeichnet, damit in der nächsten Schleife die Gegenstände darüber sein können
@@ -166,7 +167,7 @@ public class LandschaftPanel extends Region implements Observer {
 
         //Das Canvas in die Region zeichnen
         getChildren().clear();
-        this.getChildren().add(new ImageView(new Image(getClass().getResource("/resources/tankWallpaper.jpg").toString())));
+        //this.getChildren().add(new ImageView(new Image(getClass().getResource("/resources/tankWallpaper.jpg").toString())));
 
         getChildren().add(_canvas);
     }
