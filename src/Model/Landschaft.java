@@ -19,19 +19,11 @@ import java.util.Random;
  * @see Panzer
  * @see Kachel
  */
-<<<<<<< HEAD
-public class Landschaft extends Observable {
+public class Landschaft extends Observable implements Serializable {
+
     private static final int STANDARD_ROWS = 15;
     private static final int STANDARD_COLS = 15;
     private static final int STANDARD_SEED = 1540434588;
-=======
-public class Landschaft extends Observable implements Serializable {
-    static final long serialVersionUID = 2;
-
-    private static final int STANDARD_ROWS = 10;
-    private static final int STANDARD_COLS = 10;
-    private final int STANDARD_SEED = 1540434588;
->>>>>>> cda523f3dde3a1fd09b2e44a5b49ede128d691b5
 
     private int _spielfeldGroesseRows;
     private int _spielfeldGroesseCols;

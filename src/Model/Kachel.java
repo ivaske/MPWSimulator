@@ -1,12 +1,7 @@
 package Model;
 
 import javafx.scene.image.ImageView;
-
-<<<<<<< HEAD
-
-=======
 import java.io.Serializable;
->>>>>>> cda523f3dde3a1fd09b2e44a5b49ede128d691b5
 
 /**
  * Klasse der Kachel, aus denen die Landschaft besteht.
@@ -29,8 +24,6 @@ public class Kachel implements Serializable {
 
     public Kachel(KachelTyp typ) {
         _typ = typ;
-
-
 
     }
 

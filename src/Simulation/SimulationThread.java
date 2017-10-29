@@ -31,34 +31,21 @@ public class SimulationThread extends Thread implements Observer {
 
     @Override
     public void update() {
-<<<<<<< HEAD
         try {
             if (!Platform.isFxApplicationThread()) {
                 IO.println(_manager.get_simSpeed());
-                sleep( (100-_manager.get_simSpeed()) * 15 + 50);
+                sleep((100 - _manager.get_simSpeed()) * 15 + 50);
 
                 if (_manager.get_state() == SimulationState.PAUSED) {
                     this.wait();
                 }
             }
-=======
-        if (currentThread().getClass() == SimulationThread.class) {
+        } catch (InterruptedException ex) {
+            interrupt();
 
-            try {
-                sleep(_manager.get_simSpeed() * 15 + 50);
->>>>>>> cda523f3dde3a1fd09b2e44a5b49ede128d691b5
-
-                while (_manager.get_state() == SimulationState.PAUSED) {
-                    sleep(100);
-                }
-
-            } catch (InterruptedException ex) {
-                interrupt();
-
-            }
-            if (_manager.get_state() == SimulationState.STOPED) {
-                throw new RuntimeException("Simulation has stopped.");
-            }
+        }
+        if (_manager.get_state() == SimulationState.STOPED) {
+            throw new RuntimeException("Simulation has stopped.");
         }
     }
 
