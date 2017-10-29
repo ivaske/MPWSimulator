@@ -2,7 +2,11 @@ package Model;
 
 import javafx.scene.image.ImageView;
 
+<<<<<<< HEAD
 
+=======
+import java.io.Serializable;
+>>>>>>> cda523f3dde3a1fd09b2e44a5b49ede128d691b5
 
 /**
  * Klasse der Kachel, aus denen die Landschaft besteht.
@@ -11,7 +15,9 @@ import javafx.scene.image.ImageView;
  * @version 17.08.2017
  * @see Landschaft
  */
-public class Kachel {
+public class Kachel implements Serializable {
+    static final long serialVersionUID = 2;
+
 
     private KachelTyp _typ;
     private int _anzahlMunition;

@@ -3,6 +3,7 @@ package View;
 import Controller.AktionenButtonController;
 import Controller.CompileController;
 import Controller.ProgrammController;
+import Controller.SerializeController;
 import Model.*;
 import Simulation.SimulationButton;
 import Simulation.SimulationThread;
@@ -86,21 +87,13 @@ public class Simulator {
     private MenuItem _neuMenuItem;
     private MenuItem _oeffnenMenuItem;
     private MenuItem _kompilierenMenuItem;
-    private MenuItem _druckenMenuItem;
     private MenuItem _beendenMenuItem;
 
     private Menu _teritoriumMenu;
     private Menu _speichernMenu;
-    private MenuItem _speichernXMLMenuItem;
-    private MenuItem _speichernJAXBMenuItem;
     private MenuItem _speichernSerialisierenMenuItem;
     private Menu _ladenMenu;
-    private MenuItem _ladenXMLMenuItem;
-    private MenuItem _ladenJAXBMenuItem;
     private MenuItem _ladenDeserialisierenMenuItem;
-    private Menu _bildspeichernMenu;
-    private MenuItem _bildAlsPNGMenuItem;
-    private MenuItem _teritoriumDruckenMenuItem;
     private MenuItem _groesseAendernMenuItem;
     private ObservedRadioMenuItem _charakterPlaceMenuItem;
     private ObservedRadioMenuItem _pickUpPlaceMenuItem;
@@ -167,31 +160,23 @@ public class Simulator {
         _kompilierenMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+K"));
 
 
-        _druckenMenuItem = new MenuItem("Drucken");
-        _druckenMenuItem.setGraphic(new ImageView(new Image(getClass().getResource("/resources/Print16.gif").toString())));
-        _druckenMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+P"));
 
         _beendenMenuItem = new MenuItem("Beenden");
         _beendenMenuItem.setAccelerator(KeyCombination.keyCombination("SHORTCUT+Q"));
         _beendenMenuItem.setOnAction(e -> ProgrammController.schliesseProgramm(_programm));
 
         _editorMenu.getItems().addAll(_neuMenuItem, _oeffnenMenuItem, new SeparatorMenuItem(), _kompilierenMenuItem,
-                _druckenMenuItem, new SeparatorMenuItem(), _beendenMenuItem);
+                 new SeparatorMenuItem(), _beendenMenuItem);
 
         _teritoriumMenu = new Menu("_Teritorium");
         _speichernMenu = new Menu("_Speichern");
-        _speichernXMLMenuItem = new MenuItem("XML");
-        _speichernJAXBMenuItem = new MenuItem("JAXB");
         _speichernSerialisierenMenuItem = new MenuItem("Serialisieren");
-        _speichernMenu.getItems().addAll(_speichernXMLMenuItem, _speichernJAXBMenuItem, _speichernSerialisierenMenuItem);
+        _speichernSerialisierenMenuItem.setOnAction(event -> SerializeController.serialize(_landschaft));
+        _speichernMenu.getItems().addAll( _speichernSerialisierenMenuItem);
         _ladenMenu = new Menu("_Laden");
-        _ladenXMLMenuItem = new MenuItem("XML");
-        _ladenJAXBMenuItem = new MenuItem("JAXB");
         _ladenDeserialisierenMenuItem = new MenuItem("Deserialisieren");
-        _ladenMenu.getItems().addAll(_ladenXMLMenuItem, _ladenJAXBMenuItem, _ladenDeserialisierenMenuItem);
-        _bildspeichernMenu = new Menu("Als Bild speichern");
-        _bildAlsPNGMenuItem = new MenuItem("PNG");
-        _bildspeichernMenu.getItems().addAll(_bildAlsPNGMenuItem);
+        _ladenDeserialisierenMenuItem.setOnAction(event ->  SerializeController.deserialize(_landschaft));
+        _ladenMenu.getItems().addAll(  _ladenDeserialisierenMenuItem);
         _groesseAendernMenuItem = new MenuItem("Größe ändern...");
 
         ToggleGroup group = new ToggleGroup();
@@ -216,7 +201,7 @@ public class Simulator {
         _deleteMenuItem.setToggleGroup(group);
         _deleteMenuItem.setOnAction(event -> _placingItems.setisSelected(_deleteMenuItem.getButtons()));
 
-        _teritoriumMenu.getItems().addAll(_speichernMenu, _ladenMenu, _bildspeichernMenu, _groesseAendernMenuItem, new SeparatorMenuItem(),
+        _teritoriumMenu.getItems().addAll(_speichernMenu, _ladenMenu,  _groesseAendernMenuItem, new SeparatorMenuItem(),
                 _charakterPlaceMenuItem, _pickUpPlaceMenuItem, _wallPlaceMenuItem, _hamsterPlaceMenuItem, _deleteMenuItem);
 
         _charakterMenu = new Menu("_Panzer");
@@ -443,13 +428,5 @@ public class Simulator {
         return str.matches("[+-]?\\d*(\\.\\d+)?");
     }
 
-    private void DialogResizeSaveButtonClick(Button button, Dialog dialog) {
-        button.setUserData(true);
-        dialog.close();
-    }
-
-    private void centerScroll() {
-
-    }
 
 }

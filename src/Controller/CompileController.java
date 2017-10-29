@@ -1,9 +1,13 @@
 package Controller;
 
+import Model.IO;
 import Model.Landschaft;
 import Model.Panzer;
 import Model.Programm;
+import Simulation.SimulationState;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 
 import javax.tools.*;
 import java.io.File;
@@ -17,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * @author Yannick Vaske
@@ -33,9 +38,23 @@ public class CompileController {
      * @param programm Programm, welches compiliert werden soll.
      */
     public static void compile(Programm programm) {
-        File file = ProgrammController.speichereProgramm(programm);
-        compile(file);
-        programm.get_landschaft().setzePanzer(createInstanceFromProgramm(programm));
+        if (programm.get_manager().get_state() == SimulationState.STOPED) {
+
+            File file = ProgrammController.speichereProgramm(programm);
+            compile(file);
+            programm.get_landschaft().setzePanzer(createInstanceFromProgramm(programm));
+        } else {
+            programm.get_manager().pauseSimulation();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setContentText("Wollen Sie die aktuelle Simulation abbrechen und neu kompilieren?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                programm.get_manager().stopSimulation();
+                compile(programm);
+            } else {
+                programm.get_manager().startSimulation();
+            }
+        }
 
     }
 
@@ -125,7 +144,7 @@ public class CompileController {
 
                 return (Panzer) cls.getDeclaredConstructor(Landschaft.class,
                         AktionenButtonController.class).newInstance(programm.get_landschaft(),
-                        new AktionenButtonController(programm.get_landschaft(),programm.get_simulator()));
+                        new AktionenButtonController(programm.get_landschaft(), programm.get_simulator()));
 
 
             } else {

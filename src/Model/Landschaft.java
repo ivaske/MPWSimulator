@@ -5,7 +5,9 @@ import Exceptions.KeineMunitionAufKachelException;
 import Exceptions.KeineMunitionInPanzerException;
 import Exceptions.VorneNichtFreiException;
 import Utils.Observable;
+import javafx.stage.FileChooser;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Random;
 
@@ -17,10 +19,19 @@ import java.util.Random;
  * @see Panzer
  * @see Kachel
  */
+<<<<<<< HEAD
 public class Landschaft extends Observable {
     private static final int STANDARD_ROWS = 15;
     private static final int STANDARD_COLS = 15;
     private static final int STANDARD_SEED = 1540434588;
+=======
+public class Landschaft extends Observable implements Serializable {
+    static final long serialVersionUID = 2;
+
+    private static final int STANDARD_ROWS = 10;
+    private static final int STANDARD_COLS = 10;
+    private final int STANDARD_SEED = 1540434588;
+>>>>>>> cda523f3dde3a1fd09b2e44a5b49ede128d691b5
 
     private int _spielfeldGroesseRows;
     private int _spielfeldGroesseCols;
@@ -29,7 +40,7 @@ public class Landschaft extends Observable {
 
     private Kachel[][] _spielFeld;
 
-    private Panzer _panzer;
+    private transient Panzer _panzer;
     private Ausrichtung _ausrichtung;
     private Kachel _positionPanzer;
     private int _anzahlMunitionInPanzer;
@@ -69,11 +80,14 @@ public class Landschaft extends Observable {
      * @param spielfeldGroesseCols Anzahl der Spalten des Spielfelds.
      */
     public void aendereSpielfeldGroesse(int spielfeldGroesseRows, int spielfeldGroesseCols) {
-        _spielfeldGroesseRows = spielfeldGroesseRows;
-        _spielfeldGroesseCols = spielfeldGroesseCols;
-        initialisiereSpielfeld();
-        setzteVorgegebenesSpielfeld();
-        initialisierePanzer();
+        synchronized (this) {
+            _spielfeldGroesseRows = spielfeldGroesseRows;
+            _spielfeldGroesseCols = spielfeldGroesseCols;
+            initialisiereSpielfeld();
+            setzteVorgegebenesSpielfeld();
+            initialisierePanzer();
+        }
+
         notifyObserver();
     }
 
@@ -108,7 +122,7 @@ public class Landschaft extends Observable {
      *
      * @param panzer Neuer Panzer der gesetzt werden soll.
      */
-    public void setzePanzer(Panzer panzer) {
+    public synchronized void setzePanzer(Panzer panzer) {
         _panzer = panzer;
 
         for (Method method : panzer.getClass().getDeclaredMethods()) {
@@ -117,7 +131,7 @@ public class Landschaft extends Observable {
 
     }
 
-    public Panzer get_panzer() {
+    public synchronized Panzer get_panzer() {
         return _panzer;
     }
 
@@ -176,36 +190,40 @@ public class Landschaft extends Observable {
      * @throws VorneNichtFreiException Wenn eine Wand oder der Spielfeldrand vorraus ist.
      */
     public void vor() throws VorneNichtFreiException {
-
-        if (vornFrei()) {
-            int[] naechste = gebeNaechsteKoordinate();
-            _positionPanzer = _spielFeld[naechste[0]][naechste[1]];
-        } else {
-            throw new VorneNichtFreiException("Der Weg ist in der aktuellen Ausrichtung nicht frei.");
+        synchronized (this) {
+            if (vornFrei()) {
+                int[] naechste = gebeNaechsteKoordinate();
+                _positionPanzer = _spielFeld[naechste[0]][naechste[1]];
+            } else {
+                throw new VorneNichtFreiException("Der Weg ist in der aktuellen Ausrichtung nicht frei.");
+            }
         }
+        printToConsole();
         notifyObserver();
-        //printToConsole();
+
     }
 
     /**
      * Dreht die Ausrichtung des Panzers gegen Uhrzeigersinn um 90 Grad.
      */
     public void linksUm() {
-        switch (_ausrichtung) {
-            case Nord:
-                _ausrichtung = Ausrichtung.West;
-                break;
-            case Ost:
-                _ausrichtung = Ausrichtung.Nord;
-                break;
-            case Sued:
-                _ausrichtung = Ausrichtung.Ost;
-                break;
-            case West:
-                _ausrichtung = Ausrichtung.Sued;
-                break;
+        synchronized (this) {
+            switch (_ausrichtung) {
+                case Nord:
+                    _ausrichtung = Ausrichtung.West;
+                    break;
+                case Ost:
+                    _ausrichtung = Ausrichtung.Nord;
+                    break;
+                case Sued:
+                    _ausrichtung = Ausrichtung.Ost;
+                    break;
+                case West:
+                    _ausrichtung = Ausrichtung.Sued;
+                    break;
+            }
+            notifyObserver();
         }
-        notifyObserver();
         printToConsole();
     }
 
@@ -215,14 +233,16 @@ public class Landschaft extends Observable {
      * @throws KeineMunitionAufKachelException Wird geworfen, wenn keine Munition auf der Kachel liegt.
      */
     public void nimm() throws KeineMunitionAufKachelException {
-        if (!munitionDa()) {
-            throw new KeineMunitionAufKachelException("Es liegt keine Munition auf der Kachel.");
-        }
+        synchronized (this) {
+            if (!munitionDa()) {
+                throw new KeineMunitionAufKachelException("Es liegt keine Munition auf der Kachel.");
+            }
 
-        _anzahlMunitionInPanzer++;
-        _positionPanzer.set_anzahlMunition(_positionPanzer.get_anzahlMunition() - 1);
-        if (_positionPanzer.get_anzahlMunition() == 0) {
-            _positionPanzer.set_Kacheltyp(KachelTyp.leer);
+            _anzahlMunitionInPanzer++;
+            _positionPanzer.set_anzahlMunition(_positionPanzer.get_anzahlMunition() - 1);
+            if (_positionPanzer.get_anzahlMunition() == 0) {
+                _positionPanzer.set_Kacheltyp(KachelTyp.leer);
+            }
         }
         notifyObserver();
     }
@@ -234,21 +254,22 @@ public class Landschaft extends Observable {
      * @throws KeineMunitionInPanzerException Wird geworfen, wenn keine Munition im Panzer vorhanden ist.
      */
     public void schiessen() throws KeineMunitionInPanzerException {
+        synchronized (this) {
+            if (munitionLeer()) {
+                throw new KeineMunitionInPanzerException("Der Panzer hat keine Munition zum schiessen.");
+            }
 
-        if (munitionLeer()) {
-            throw new KeineMunitionInPanzerException("Der Panzer hat keine Munition zum schiessen.");
-        }
+            _anzahlMunitionInPanzer--; //Es wird geschossen, unabhängig davon, ob etwas voraus ist.
 
-        _anzahlMunitionInPanzer--; //Es wird geschossen, unabhängig davon, ob etwas voraus ist.
+            int[] naechstePosition = gebeNaechsteKoordinate();
 
-        int[] naechstePosition = gebeNaechsteKoordinate();
+            Kachel kachel = _spielFeld[naechstePosition[0]][naechstePosition[1]];
 
-        Kachel kachel = _spielFeld[naechstePosition[0]][naechstePosition[1]];
-
-        if (kachel.get_Kacheltyp() == KachelTyp.Wand) {
-            aktualisiereKachelTyp(naechstePosition[0], naechstePosition[1], KachelTyp.leer);
-        } else if (kachel.get_Kacheltyp() == KachelTyp.Hamster) {
-            erschiesseHamster(naechstePosition[0], naechstePosition[1]);
+            if (kachel.get_Kacheltyp() == KachelTyp.Wand) {
+                aktualisiereKachelTyp(naechstePosition[0], naechstePosition[1], KachelTyp.leer);
+            } else if (kachel.get_Kacheltyp() == KachelTyp.Hamster) {
+                erschiesseHamster(naechstePosition[0], naechstePosition[1]);
+            }
         }
         notifyObserver();
 
@@ -337,57 +358,57 @@ public class Landschaft extends Observable {
      * Testfunktion zum Ausgeben des aktuellen Spielfelds in der Konsole.
      */
     public void printToConsole() {
-        System.out.println();
-        System.out.println();
-        System.out.print("  ");
-        for (int i = 0; i < _spielFeld.length; i++) {
-            System.out.print(i + " ");
-        }
-        for (int col = 0; col < _spielFeld.length; col++) {
-            System.out.println();
-            System.out.print(col + " ");
-            for (int row = 0; row < _spielFeld[col].length; row++) {
-                String symbol = "";
-                if (_spielFeld[row][col] == _positionPanzer) {
-                    //symbol = "P ";
-                    switch (_ausrichtung) {
-                        case Ost:
-                            symbol = "> ";
-                            break;
-                        case Sued:
-                            symbol = "v ";
-                            break;
-                        case West:
-                            symbol = "< ";
-                            break;
-                        case Nord:
-                            symbol = "^ ";
-                            break;
-
-                    }
-                } else {
-
-                    switch (_spielFeld[row][col].get_Kacheltyp()) {
-                        case Wand:
-                            symbol = "W ";
-                            break;
-                        case leer:
-                            symbol = "0 ";
-                            break;
-                        case Munition:
-                            symbol = _spielFeld[row][col].get_anzahlMunition() + " ";
-                            break;
-                        case Hamster:
-                            symbol = "H ";
-                            break;
-                        case leerBlood:
-                            symbol = "B ";
-                            break;
-                    }
-                }
-                System.out.print(symbol);
-            }
-        }
+//        System.out.println();
+//        System.out.println();
+//        System.out.print("  ");
+//        for (int i = 0; i < _spielFeld.length; i++) {
+//            System.out.print(i + " ");
+//        }
+//        for (int col = 0; col < _spielFeld.length; col++) {
+//            System.out.println();
+//            System.out.print(col + " ");
+//            for (int row = 0; row < _spielFeld[col].length; row++) {
+//                String symbol = "";
+//                if (_spielFeld[row][col] == _positionPanzer) {
+//                    //symbol = "P ";
+//                    switch (_ausrichtung) {
+//                        case Ost:
+//                            symbol = "> ";
+//                            break;
+//                        case Sued:
+//                            symbol = "v ";
+//                            break;
+//                        case West:
+//                            symbol = "< ";
+//                            break;
+//                        case Nord:
+//                            symbol = "^ ";
+//                            break;
+//
+//                    }
+//                } else {
+//
+//                    switch (_spielFeld[row][col].get_Kacheltyp()) {
+//                        case Wand:
+//                            symbol = "W ";
+//                            break;
+//                        case leer:
+//                            symbol = "0 ";
+//                            break;
+//                        case Munition:
+//                            symbol = _spielFeld[row][col].get_anzahlMunition() + " ";
+//                            break;
+//                        case Hamster:
+//                            symbol = "H ";
+//                            break;
+//                        case leerBlood:
+//                            symbol = "B ";
+//                            break;
+//                    }
+//                }
+//                System.out.print(symbol);
+//            }
+//        }
     }
 
     /**
@@ -536,7 +557,7 @@ public class Landschaft extends Observable {
         return _seed;
     }
 
-    public void set_seed(int _seed) {
+    public synchronized void set_seed(int _seed) {
         this._seed = _seed;
         System.out.println(_seed);
     }
@@ -544,21 +565,25 @@ public class Landschaft extends Observable {
     //-------------------------------------------------
 
     public void setztePanzerOnTile(int row, int col) {
-        if (gebeKachelTyp(row, col) == KachelTyp.Wand) {
-            _spielFeld[row][col].set_Kacheltyp(KachelTyp.leer);
+        synchronized (this) {
+            if (gebeKachelTyp(row, col) == KachelTyp.Wand) {
+                _spielFeld[row][col].set_Kacheltyp(KachelTyp.leer);
+            }
+            _positionPanzer = _spielFeld[row][col];
         }
-        _positionPanzer = _spielFeld[row][col];
         notifyObserver();
     }
 
     public void setzeMunitionOnTile(int row, int col) {
-        if (gebeKachelTyp(row, col) != KachelTyp.Wand && _positionPanzer != _spielFeld[row][col]) {
-            Kachel kachel = _spielFeld[row][col];
-            kachel.set_Kacheltyp(KachelTyp.Munition);
-            kachel.set_anzahlMunition(kachel.get_anzahlMunition() + 1);
-            _spielFeld[row][col] = kachel;
-            notifyObserver();
+        synchronized (this) {
+            if (gebeKachelTyp(row, col) != KachelTyp.Wand && _positionPanzer != _spielFeld[row][col]) {
+                Kachel kachel = _spielFeld[row][col];
+                kachel.set_Kacheltyp(KachelTyp.Munition);
+                kachel.set_anzahlMunition(kachel.get_anzahlMunition() + 1);
+                _spielFeld[row][col] = kachel;
+            }
         }
+        notifyObserver();
     }
 
     public void setzeWallOnTile(int row, int col) {
@@ -570,25 +595,43 @@ public class Landschaft extends Observable {
     }
 
     public void setzeHamsterOnTile(int row, int col) {
-        if (_positionPanzer != _spielFeld[row][col]) {
+        synchronized (this) {
+            if (_positionPanzer != _spielFeld[row][col]) {
 
-            for (int nrow = 0; nrow < _spielfeldGroesseRows; nrow++) {
-                for (int ncol = 0; ncol < _spielfeldGroesseCols; ncol++) {
-                    if (gebeKachelTyp(nrow, ncol) == KachelTyp.Hamster) {
-                        _spielFeld[nrow][ncol].set_Kacheltyp(KachelTyp.leer);
+                for (int nrow = 0; nrow < _spielfeldGroesseRows; nrow++) {
+                    for (int ncol = 0; ncol < _spielfeldGroesseCols; ncol++) {
+                        if (gebeKachelTyp(nrow, ncol) == KachelTyp.Hamster) {
+                            _spielFeld[nrow][ncol].set_Kacheltyp(KachelTyp.leer);
+                        }
                     }
                 }
+                _spielFeld[row][col].set_Kacheltyp(KachelTyp.Hamster);
             }
-            _spielFeld[row][col].set_Kacheltyp(KachelTyp.Hamster);
-            notifyObserver();
         }
+        notifyObserver();
+
     }
 
     public void deleteTile(int row, int col) {
-        if (_positionPanzer != _spielFeld[row][col]) {
-            _spielFeld[row][col].set_Kacheltyp(KachelTyp.leer);
-            notifyObserver();
+        synchronized (this) {
+            if (_positionPanzer != _spielFeld[row][col]) {
+                _spielFeld[row][col].set_Kacheltyp(KachelTyp.leer);
+            }
         }
+        notifyObserver();
     }
+
+    public void aktualisiereLandschaftAusDeserialisierung(Landschaft landschaft) {
+        _spielfeldGroesseCols = landschaft._spielfeldGroesseCols;
+        _spielfeldGroesseRows = landschaft._spielfeldGroesseRows;
+        _spielFeld = landschaft._spielFeld;
+        _positionPanzer = landschaft._positionPanzer;
+        _ausrichtung = landschaft._ausrichtung;
+        _anzahlMunitionInPanzer = landschaft._anzahlMunitionInPanzer;
+        _seed = landschaft._seed;
+
+        notifyObserver();
+    }
+
 
 }

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="MPWSimulator:jar">
+    <output-path>$PROJECT_DIR$/../../../Quellcode/MPWSimulator/out/artifacts/MPWSimulator_jar</output-path>
+    <root id="archive" name="MPWSimulator.jar">
+      <element id="module-output" name="MPWSimulator" />
+    </root>
+  </artifact>
+</component>
